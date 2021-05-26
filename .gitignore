@@ -30,3 +30,6 @@ build
 
 # Keep gradle-wrapper.jar
 !gradle/wrapper/gradle-wrapper.jar
+
+# intellij
+.idea
