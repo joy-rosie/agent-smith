@@ -43,7 +43,7 @@ public class Matrix {
         System.arraycopy(array, 0, this.array, 0, this.length);
     }
 
-    public static Matrix from(double[] array, int numRows, int numCols) {
+    public static Matrix create(double[] array, int numRows, int numCols) {
         return new Matrix(array, numRows, numCols);
     }
 
@@ -102,10 +102,10 @@ public class Matrix {
 
             System.arraycopy(nestedArray[i], 0, array, i * numCols, numCols);
         }
-        return from(array, numRows, numCols);
+        return create(array, numRows, numCols);
     }
 
     public Matrix copy() {
-        return from(array, numRows, numCols);
+        return create(array, numRows, numCols);
     }
 }

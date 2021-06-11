@@ -10,69 +10,69 @@ import static org.junit.Assert.*;
 public class MatrixTest {
 
     @Test
-    public void testMatrixFactoryFromArrayNegativeNumRows() {
+    public void testMatrixFactoryCreateNegativeNumRows() {
         double[] array = new double[]{};
         int numRows = -1;
         int numCols = 0;
         String expected = "'numRows' (-1) has to be a non negative integer";
 
-        Exception thrown = assertThrows(IllegalArgumentException.class, () -> Matrix.from(array, numRows, numCols));
+        Exception thrown = assertThrows(IllegalArgumentException.class, () -> Matrix.create(array, numRows, numCols));
 
         assertEquals(expected, thrown.getMessage());
     }
 
     @Test
-    public void testMatrixFactoryFromArrayNegativeNumCols() {
+    public void testMatrixFactoryCreateNegativeNumCols() {
         double[] array = new double[]{};
         int numRows = 0;
         int numCols = -1;
         String expected = "'numCols' (-1) has to be a non negative integer";
 
-        Exception thrown = assertThrows(IllegalArgumentException.class, () -> Matrix.from(array, numRows, numCols));
+        Exception thrown = assertThrows(IllegalArgumentException.class, () -> Matrix.create(array, numRows, numCols));
 
         assertEquals(expected, thrown.getMessage());
     }
 
     @Test
-    public void testMatrixFactoryFromArrayExceptionNull() {
+    public void testMatrixFactoryCreateExceptionNull() {
         double[] array = null;
         int numRows = 0;
         int numCols = 0;
         String expected = "'array' cannot be null";
 
-        Exception thrown = assertThrows(NullPointerException.class, () -> Matrix.from(array, numRows, numCols));
+        Exception thrown = assertThrows(NullPointerException.class, () -> Matrix.create(array, numRows, numCols));
 
         assertEquals(expected, thrown.getMessage());
     }
 
     @Test
-    public void testMatrixFactoryFromArrayExceptionLengthTooLow() {
+    public void testMatrixFactoryCreateExceptionLengthTooLow() {
         double[] array = new double[]{};
         int numRows = 1;
         int numCols = 1;
         String expected = "Length of 'array' (0) does not match 'numRows' * 'numCols' (1)";
 
         Exception thrown = assertThrows(
-                IllegalArgumentException.class, () -> Matrix.from(array, numRows, numCols));
+                IllegalArgumentException.class, () -> Matrix.create(array, numRows, numCols));
 
         assertEquals(expected, thrown.getMessage());
     }
 
     @Test
-    public void testMatrixFactoryFromArrayExceptionLengthTooHigh() {
+    public void testMatrixFactoryCreateExceptionLengthTooHigh() {
         double[] array = new double[]{1, 2, 3, 4};
         int numRows = 1;
         int numCols = 1;
         String expected = "Length of 'array' (4) does not match 'numRows' * 'numCols' (1)";
 
         Exception thrown = assertThrows(
-                IllegalArgumentException.class, () -> Matrix.from(array, numRows, numCols));
+                IllegalArgumentException.class, () -> Matrix.create(array, numRows, numCols));
 
         assertEquals(expected, thrown.getMessage());
     }
 
     @Test
-    public void testMatrixFactoryFromArrayEmpty() {
+    public void testMatrixFactoryCreateEmpty() {
         double[] array = new double[]{};
         int numRows = 0;
         int numCols = 0;
@@ -80,7 +80,7 @@ public class MatrixTest {
         int expectedNumRows = 0;
         int expectedNumCols = 0;
 
-        Matrix matrix = Matrix.from(array, numRows, numCols);
+        Matrix matrix = Matrix.create(array, numRows, numCols);
 
         assertArrayEquals(matrix.getArray(), expectedArray, 0.0);
         assertEquals(matrix.getNumRows(), expectedNumRows);
@@ -88,7 +88,7 @@ public class MatrixTest {
     }
 
     @Test
-    public void testMatrixFactoryFromArraySimple1() {
+    public void testMatrixFactoryCreateSimple1() {
         double[] array = new double[]{1, 2, 3, 4};
         int numRows = 2;
         int numCols = 2;
@@ -96,7 +96,7 @@ public class MatrixTest {
         int expectedNumRows = 2;
         int expectedNumCols = 2;
 
-        Matrix matrix = Matrix.from(array, numRows, numCols);
+        Matrix matrix = Matrix.create(array, numRows, numCols);
 
         assertArrayEquals(matrix.getArray(), expectedArray, 0.0);
         assertEquals(matrix.getNumRows(), expectedNumRows);
@@ -104,7 +104,7 @@ public class MatrixTest {
     }
 
     @Test
-    public void testMatrixFactoryFromArraySimple2() {
+    public void testMatrixFactoryCreateSimple2() {
         double[] array = new double[]{1, 2, 3, 4, 5, 6};
         int numRows = 2;
         int numCols = 3;
@@ -112,7 +112,7 @@ public class MatrixTest {
         int expectedNumRows = 2;
         int expectedNumCols = 3;
 
-        Matrix matrix = Matrix.from(array, numRows, numCols);
+        Matrix matrix = Matrix.create(array, numRows, numCols);
 
         assertArrayEquals(matrix.getArray(), expectedArray, 0.0);
         assertEquals(matrix.getNumRows(), expectedNumRows);
@@ -120,7 +120,7 @@ public class MatrixTest {
     }
 
     @Test
-    public void testMatrixFactoryFromArraySimple3() {
+    public void testMatrixFactoryCreateSimple3() {
         double[] array = new double[]{1, 2, 3, 4, 5, 6};
         int numRows = 3;
         int numCols = 2;
@@ -128,7 +128,7 @@ public class MatrixTest {
         int expectedNumRows = 3;
         int expectedNumCols = 2;
 
-        Matrix matrix = Matrix.from(array, numRows, numCols);
+        Matrix matrix = Matrix.create(array, numRows, numCols);
 
         assertArrayEquals(matrix.getArray(), expectedArray, 0.0);
         assertEquals(matrix.getNumRows(), expectedNumRows);
@@ -137,7 +137,7 @@ public class MatrixTest {
 
     @Test
     public void testMatrixEquals1() {
-        Matrix matrix = Matrix.from(new double[]{}, 0, 0);
+        Matrix matrix = Matrix.create(new double[]{}, 0, 0);
         Matrix objectToCompare = null;
         boolean expected = false;
 
@@ -148,8 +148,8 @@ public class MatrixTest {
 
     @Test
     public void testMatrixEquals2() {
-        Matrix matrix = Matrix.from(new double[]{}, 0, 0);
-        Matrix objectToCompare = Matrix.from(new double[]{}, 0, 0);
+        Matrix matrix = Matrix.create(new double[]{}, 0, 0);
+        Matrix objectToCompare = Matrix.create(new double[]{}, 0, 0);
         boolean expected = true;
 
         boolean equals = matrix.equals(objectToCompare);
@@ -159,7 +159,7 @@ public class MatrixTest {
 
     @Test
     public void testMatrixEquals3() {
-        Matrix matrix = Matrix.from(new double[]{}, 0, 0);
+        Matrix matrix = Matrix.create(new double[]{}, 0, 0);
         Matrix objectToCompare = matrix;
         boolean expected = true;
 
@@ -170,8 +170,8 @@ public class MatrixTest {
 
     @Test
     public void testMatrixEquals4() {
-        Matrix matrix = Matrix.from(new double[]{}, 0, 0);
-        Matrix objectToCompare = Matrix.from(new double[]{1}, 1, 1);
+        Matrix matrix = Matrix.create(new double[]{}, 0, 0);
+        Matrix objectToCompare = Matrix.create(new double[]{1}, 1, 1);
         boolean expected = false;
 
         boolean equals = matrix.equals(objectToCompare);
@@ -181,8 +181,8 @@ public class MatrixTest {
 
     @Test
     public void testMatrixEquals5() {
-        Matrix matrix = Matrix.from(new double[]{0}, 1, 1);
-        Matrix objectToCompare = Matrix.from(new double[]{0, 1}, 1, 2);
+        Matrix matrix = Matrix.create(new double[]{0}, 1, 1);
+        Matrix objectToCompare = Matrix.create(new double[]{0, 1}, 1, 2);
         boolean expected = false;
 
         boolean equals = matrix.equals(objectToCompare);
@@ -192,8 +192,8 @@ public class MatrixTest {
 
     @Test
     public void testMatrixEquals6() {
-        Matrix matrix = Matrix.from(new double[]{0, 1}, 2, 1);
-        Matrix objectToCompare = Matrix.from(new double[]{0, 1}, 1, 2);
+        Matrix matrix = Matrix.create(new double[]{0, 1}, 2, 1);
+        Matrix objectToCompare = Matrix.create(new double[]{0, 1}, 1, 2);
         boolean expected = false;
 
         boolean equals = matrix.equals(objectToCompare);
@@ -203,8 +203,8 @@ public class MatrixTest {
 
     @Test
     public void testMatrixEquals7() {
-        Matrix matrix = Matrix.from(new double[]{0, 1}, 1, 2);
-        Matrix objectToCompare = Matrix.from(new double[]{0, 1}, 1, 2);
+        Matrix matrix = Matrix.create(new double[]{0, 1}, 1, 2);
+        Matrix objectToCompare = Matrix.create(new double[]{0, 1}, 1, 2);
         boolean expected = true;
 
         boolean equals = matrix.equals(objectToCompare);
@@ -214,7 +214,7 @@ public class MatrixTest {
 
     @Test
     public void testMatrixEquals8() {
-        Matrix matrix = Matrix.from(new double[]{0, 1}, 1, 2);
+        Matrix matrix = Matrix.create(new double[]{0, 1}, 1, 2);
         double[] objectToCompare = new double[]{0, 1};
         boolean expected = false;
 
@@ -225,7 +225,7 @@ public class MatrixTest {
 
     @Test
     public void testMatrixHashCode1() {
-        Matrix matrix = Matrix.from(new double[]{}, 0, 0);
+        Matrix matrix = Matrix.create(new double[]{}, 0, 0);
         int expected = 29792;
 
         int hashCode = matrix.hashCode();
@@ -235,7 +235,7 @@ public class MatrixTest {
 
     @Test
     public void testMatrixHashCode2() {
-        Matrix matrix = Matrix.from(new double[]{}, 0, 0);
+        Matrix matrix = Matrix.create(new double[]{}, 0, 0);
         int expected = 29792;
 
         int hashCode = matrix.hashCode();
@@ -245,7 +245,7 @@ public class MatrixTest {
 
     @Test
     public void testMatrixHashCode3() {
-        Matrix matrix = Matrix.from(new double[]{0, 1}, 1, 2);
+        Matrix matrix = Matrix.create(new double[]{0, 1}, 1, 2);
         int expected = 1072725023;
 
         int hashCode = matrix.hashCode();
@@ -255,7 +255,7 @@ public class MatrixTest {
 
     @Test
     public void testMatrixHashCode4() {
-        Matrix matrix = Matrix.from(new double[]{0, 1}, 2, 1);
+        Matrix matrix = Matrix.create(new double[]{0, 1}, 2, 1);
         int expected = 1072725953;
 
         int hashCode = matrix.hashCode();
@@ -347,7 +347,7 @@ public class MatrixTest {
     @Test
     public void testMatrixFactoryFromNestedArraySimple1() {
         double[][] array = new double[][]{{1, 2}, {3, 4}};
-        Matrix expected = Matrix.from(new double[]{1, 2, 3, 4}, 2, 2);
+        Matrix expected = Matrix.create(new double[]{1, 2, 3, 4}, 2, 2);
 
         Matrix matrix = Matrix.from(array);
 
@@ -357,7 +357,7 @@ public class MatrixTest {
     @Test
     public void testMatrixFactoryFromNestedArraySimple2() {
         double[][] array = new double[][]{{1, 3}, {2, 4}};
-        Matrix expected = Matrix.from(new double[]{1, 3, 2, 4}, 2, 2);
+        Matrix expected = Matrix.create(new double[]{1, 3, 2, 4}, 2, 2);
 
         Matrix matrix = Matrix.from(array);
 
@@ -367,7 +367,7 @@ public class MatrixTest {
     @Test
     public void testMatrixFactoryFromNestedArraySimple3() {
         double[][] array = new double[][]{{1, 2, 3}, {4, 5, 6}};
-        Matrix expected = Matrix.from(new double[]{1, 2, 3, 4, 5, 6}, 2, 3);
+        Matrix expected = Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 2, 3);
 
         Matrix matrix = Matrix.from(array);
 
@@ -377,7 +377,7 @@ public class MatrixTest {
     @Test
     public void testMatrixFactoryFromNestedArraySimple4() {
         double[][] array = new double[][]{{1, 2}, {3, 4}, {5, 6}};
-        Matrix expected = Matrix.from(new double[]{1, 2, 3, 4, 5, 6}, 3, 2);
+        Matrix expected = Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 3, 2);
 
         Matrix matrix = Matrix.from(array);
 
@@ -386,7 +386,7 @@ public class MatrixTest {
 
     @Test
     public void testMatrixCopy() {
-        Matrix matrix = Matrix.from(new double[]{}, 0 ,0);
+        Matrix matrix = Matrix.create(new double[]{}, 0 ,0);
 
         Matrix copiedMatrix = matrix.copy();
 
