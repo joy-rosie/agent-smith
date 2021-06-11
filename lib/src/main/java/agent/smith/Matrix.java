@@ -61,6 +61,37 @@ public class Matrix {
         return numCols;
     }
 
+    public double[] getRow(int i) {
+        if (i < 0 || i >= numRows) {
+            int maxRows = numRows - 1;
+            if (maxRows < 0) {
+                maxRows = 0;
+            }
+            throw new IllegalArgumentException(
+                    String.format("Row index (%d) has to be between 0 and %d", i, maxRows));
+        }
+        return Arrays.copyOfRange(array, i * numCols, (i + 1) * numCols);
+    }
+
+    public double[] getCol(int j) {
+        if (j < 0 || j >= numCols) {
+            int maxCols = numCols - 1;
+            if (maxCols < 0) {
+                maxCols = 0;
+            }
+            throw new IllegalArgumentException(
+                    String.format("Col index (%d) has to be between 0 and %d", j, maxCols));
+        }
+
+        double[] colArray = new double[numRows];
+
+        for (int i = 0; i < numRows; i++) {
+            colArray[i] = array[i * numCols + j];
+        }
+
+        return colArray;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -75,6 +106,13 @@ public class Matrix {
         result = 31 * result + Arrays.hashCode(array);
         return result;
     }
+
+//    @Override
+//    public String toString() {
+//        return "Matrix{" +
+//                "array=" + Arrays.toString(array) +
+//                '}';
+//    }
 
     public static Matrix from(double[][] nestedArray) {
 

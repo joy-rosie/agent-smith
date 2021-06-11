@@ -82,9 +82,9 @@ public class MatrixTest {
 
         Matrix matrix = Matrix.create(array, numRows, numCols);
 
-        assertArrayEquals(matrix.getArray(), expectedArray, 0.0);
-        assertEquals(matrix.getNumRows(), expectedNumRows);
-        assertEquals(matrix.getNumCols(), expectedNumCols);
+        assertArrayEquals(expectedArray, matrix.getArray(), 0.0);
+        assertEquals(expectedNumRows, matrix.getNumRows());
+        assertEquals(expectedNumCols, matrix.getNumCols());
     }
 
     @Test
@@ -98,9 +98,9 @@ public class MatrixTest {
 
         Matrix matrix = Matrix.create(array, numRows, numCols);
 
-        assertArrayEquals(matrix.getArray(), expectedArray, 0.0);
-        assertEquals(matrix.getNumRows(), expectedNumRows);
-        assertEquals(matrix.getNumCols(), expectedNumCols);
+        assertArrayEquals(expectedArray, matrix.getArray(), 0.0);
+        assertEquals(expectedNumRows, matrix.getNumRows());
+        assertEquals(expectedNumCols, matrix.getNumCols());
     }
 
     @Test
@@ -114,9 +114,9 @@ public class MatrixTest {
 
         Matrix matrix = Matrix.create(array, numRows, numCols);
 
-        assertArrayEquals(matrix.getArray(), expectedArray, 0.0);
-        assertEquals(matrix.getNumRows(), expectedNumRows);
-        assertEquals(matrix.getNumCols(), expectedNumCols);
+        assertArrayEquals(expectedArray, matrix.getArray(), 0.0);
+        assertEquals(expectedNumRows, matrix.getNumRows());
+        assertEquals(expectedNumCols, matrix.getNumCols());
     }
 
     @Test
@@ -130,9 +130,163 @@ public class MatrixTest {
 
         Matrix matrix = Matrix.create(array, numRows, numCols);
 
-        assertArrayEquals(matrix.getArray(), expectedArray, 0.0);
-        assertEquals(matrix.getNumRows(), expectedNumRows);
-        assertEquals(matrix.getNumCols(), expectedNumCols);
+        assertArrayEquals(expectedArray, matrix.getArray(), 0.0);
+        assertEquals(expectedNumRows, matrix.getNumRows());
+        assertEquals(expectedNumCols, matrix.getNumCols());
+    }
+
+    @Test
+    public void testMatrixGetRowExceptionIndexNegative() {
+        Matrix matrix = Matrix.create(new double[]{}, 0, 0);
+        int i = -1;
+        String expected = "Row index (-1) has to be between 0 and 0";
+
+        Exception thrown = assertThrows(IllegalArgumentException.class, () -> matrix.getRow(i));
+
+        assertEquals(expected, thrown.getMessage());
+    }
+
+    @Test
+    public void testMatrixGetRowExceptionTooBig() {
+        Matrix matrix = Matrix.create(new double[]{}, 0, 0);
+        int i = 1;
+        String expected = "Row index (1) has to be between 0 and 0";
+
+        Exception thrown = assertThrows(IllegalArgumentException.class, () -> matrix.getRow(i));
+
+        assertEquals(expected, thrown.getMessage());
+    }
+
+    @Test
+    public void testMatrixGetRow1() {
+        Matrix matrix = Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 2, 3);
+        int i = 0;
+        double[] expected = new double[]{1, 2, 3};
+
+        double[] row = matrix.getRow(i);
+
+        assertArrayEquals(expected, row, 0.0);
+    }
+
+    @Test
+    public void testMatrixGetRow2() {
+        Matrix matrix = Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 2, 3);
+        int i = 1;
+        double[] expected = new double[]{4, 5, 6};
+
+        double[] row = matrix.getRow(i);
+
+        assertArrayEquals(expected, row, 0.0);
+    }
+
+    @Test
+    public void testMatrixGetRow3() {
+        Matrix matrix = Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 3, 2);
+        int i = 0;
+        double[] expected = new double[]{1, 2};
+
+        double[] row = matrix.getRow(i);
+
+        assertArrayEquals(expected, row, 0.0);
+    }
+
+    @Test
+    public void testMatrixGetRow4() {
+        Matrix matrix = Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 3, 2);
+        int i = 1;
+        double[] expected = new double[]{3, 4};
+
+        double[] row = matrix.getRow(i);
+
+        assertArrayEquals(expected, row, 0.0);
+    }
+
+    @Test
+    public void testMatrixGetRow5() {
+        Matrix matrix = Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 3, 2);
+        int i = 2;
+        double[] expected = new double[]{5, 6};
+
+        double[] row = matrix.getRow(i);
+
+        assertArrayEquals(expected, row, 0.0);
+    }
+
+    @Test
+    public void testMatrixGetColExceptionIndexNegative() {
+        Matrix matrix = Matrix.create(new double[]{}, 0, 0);
+        int j = -1;
+        String expected = "Col index (-1) has to be between 0 and 0";
+
+        Exception thrown = assertThrows(IllegalArgumentException.class, () -> matrix.getCol(j));
+
+        assertEquals(expected, thrown.getMessage());
+    }
+
+    @Test
+    public void testMatrixGetColExceptionTooBig() {
+        Matrix matrix = Matrix.create(new double[]{}, 0, 0);
+        int j = 1;
+        String expected = "Col index (1) has to be between 0 and 0";
+
+        Exception thrown = assertThrows(IllegalArgumentException.class, () -> matrix.getCol(j));
+
+        assertEquals(expected, thrown.getMessage());
+    }
+
+    @Test
+    public void testMatrixGetCol1() {
+        Matrix matrix = Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 2, 3);
+        int j = 0;
+        double[] expected = new double[]{1, 4};
+
+        double[] col = matrix.getCol(j);
+
+        assertArrayEquals(expected, col, 0.0);
+    }
+
+    @Test
+    public void testMatrixGetCol2() {
+        Matrix matrix = Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 2, 3);
+        int j = 1;
+        double[] expected = new double[]{2, 5};
+
+        double[] col = matrix.getCol(j);
+
+        assertArrayEquals(expected, col, 0.0);
+    }
+
+    @Test
+    public void testMatrixGetCol3() {
+        Matrix matrix = Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 2, 3);
+        int j = 2;
+        double[] expected = new double[]{3, 6};
+
+        double[] col = matrix.getCol(j);
+
+        assertArrayEquals(expected, col, 0.0);
+    }
+
+    @Test
+    public void testMatrixGetCol4() {
+        Matrix matrix = Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 3, 2);
+        int j = 0;
+        double[] expected = new double[]{1, 3, 5};
+
+        double[] row = matrix.getCol(j);
+
+        assertArrayEquals(expected, row, 0.0);
+    }
+
+    @Test
+    public void testMatrixGetCol5() {
+        Matrix matrix = Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 3, 2);
+        int j = 1;
+        double[] expected = new double[]{2, 4, 6};
+
+        double[] row = matrix.getCol(j);
+
+        assertArrayEquals(expected, row, 0.0);
     }
 
     @Test
@@ -143,7 +297,7 @@ public class MatrixTest {
 
         boolean equals = matrix.equals(objectToCompare);
 
-        assertEquals(equals, expected);
+        assertEquals(expected, equals);
     }
 
     @Test
@@ -154,7 +308,7 @@ public class MatrixTest {
 
         boolean equals = matrix.equals(objectToCompare);
 
-        assertEquals(equals, expected);
+        assertEquals(expected, equals);
     }
 
     @Test
@@ -165,7 +319,7 @@ public class MatrixTest {
 
         boolean equals = matrix.equals(objectToCompare);
 
-        assertEquals(equals, expected);
+        assertEquals(expected, equals);
     }
 
     @Test
@@ -176,7 +330,7 @@ public class MatrixTest {
 
         boolean equals = matrix.equals(objectToCompare);
 
-        assertEquals(equals, expected);
+        assertEquals(expected, equals);
     }
 
     @Test
@@ -187,7 +341,7 @@ public class MatrixTest {
 
         boolean equals = matrix.equals(objectToCompare);
 
-        assertEquals(equals, expected);
+        assertEquals(expected, equals);
     }
 
     @Test
@@ -198,7 +352,7 @@ public class MatrixTest {
 
         boolean equals = matrix.equals(objectToCompare);
 
-        assertEquals(equals, expected);
+        assertEquals(expected, equals);
     }
 
     @Test
@@ -209,7 +363,7 @@ public class MatrixTest {
 
         boolean equals = matrix.equals(objectToCompare);
 
-        assertEquals(equals, expected);
+        assertEquals(expected, equals);
     }
 
     @Test
@@ -220,7 +374,7 @@ public class MatrixTest {
 
         boolean equals = matrix.equals(objectToCompare);
 
-        assertEquals(equals, expected);
+        assertEquals(expected, equals);
     }
 
     @Test
@@ -230,7 +384,7 @@ public class MatrixTest {
 
         int hashCode = matrix.hashCode();
 
-        assertEquals(hashCode, expected);
+        assertEquals(expected, hashCode);
     }
 
     @Test
@@ -240,7 +394,7 @@ public class MatrixTest {
 
         int hashCode = matrix.hashCode();
 
-        assertEquals(hashCode, expected);
+        assertEquals(expected, hashCode);
     }
 
     @Test
@@ -250,7 +404,7 @@ public class MatrixTest {
 
         int hashCode = matrix.hashCode();
 
-        assertEquals(hashCode, expected);
+        assertEquals(expected, hashCode);
     }
 
     @Test
@@ -260,7 +414,7 @@ public class MatrixTest {
 
         int hashCode = matrix.hashCode();
 
-        assertEquals(hashCode, expected);
+        assertEquals(expected, hashCode);
     }
 
     @Test
@@ -351,7 +505,7 @@ public class MatrixTest {
 
         Matrix matrix = Matrix.from(array);
 
-        assertEquals(matrix, expected);
+        assertEquals(expected, matrix);
     }
 
     @Test
@@ -361,7 +515,7 @@ public class MatrixTest {
 
         Matrix matrix = Matrix.from(array);
 
-        assertEquals(matrix, expected);
+        assertEquals(expected, matrix);
     }
 
     @Test
@@ -371,7 +525,7 @@ public class MatrixTest {
 
         Matrix matrix = Matrix.from(array);
 
-        assertEquals(matrix, expected);
+        assertEquals(expected, matrix);
     }
 
     @Test
@@ -381,7 +535,7 @@ public class MatrixTest {
 
         Matrix matrix = Matrix.from(array);
 
-        assertEquals(matrix, expected);
+        assertEquals(expected, matrix);
     }
 
     @Test
@@ -390,8 +544,8 @@ public class MatrixTest {
 
         Matrix copiedMatrix = matrix.copy();
 
-        assertEquals(copiedMatrix, matrix);
-        assertNotSame(copiedMatrix, matrix);
+        assertEquals(matrix, copiedMatrix);
+        assertNotSame(matrix, copiedMatrix);
     }
 
 }
