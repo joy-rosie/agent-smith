@@ -43,7 +43,7 @@ public class Matrix {
         System.arraycopy(array, 0, this.array, 0, this.length);
     }
 
-    public static Matrix fromArray(double[] array, int numRows, int numCols) {
+    public static Matrix from(double[] array, int numRows, int numCols) {
         return new Matrix(array, numRows, numCols);
     }
 
@@ -76,7 +76,7 @@ public class Matrix {
         return result;
     }
 
-    public static Matrix fromNestedArray(double[][] nestedArray) {
+    public static Matrix from(double[][] nestedArray) {
 
         if (nestedArray == null) {
             throw new NullPointerException("'nestedArray' cannot be null");
@@ -102,10 +102,10 @@ public class Matrix {
 
             System.arraycopy(nestedArray[i], 0, array, i * numCols, numCols);
         }
-        return fromArray(array, numRows, numCols);
+        return from(array, numRows, numCols);
     }
 
     public Matrix copy() {
-        return fromArray(array, numRows, numCols);
+        return from(array, numRows, numCols);
     }
 }
