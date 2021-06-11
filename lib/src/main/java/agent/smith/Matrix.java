@@ -62,12 +62,20 @@ public class Matrix {
         return numCols;
     }
 
+    private static int getIndex(int i, int j, int numCols) {
+        return i * numCols + j;
+    }
+
+    private int getIndex(int i, int j) {
+        return getIndex(i, j, numCols);
+    }
+
     public double[] getRow(int i) {
         if (i < 0 || i >= numRows) {
             throw new IllegalArgumentException(
                     String.format("Row index (%d) has to be between 0 and %d", i, Math.max(numRows - 1, 0)));
         }
-        return Arrays.copyOfRange(array, i * numCols, (i + 1) * numCols);
+        return Arrays.copyOfRange(array, getIndex(i, 0), getIndex(i, numCols));
     }
 
     public double[] getCol(int j) {
@@ -79,7 +87,7 @@ public class Matrix {
         double[] colArray = new double[numRows];
 
         for (int i = 0; i < numRows; i++) {
-            colArray[i] = array[i * numCols + j];
+            colArray[i] = array[getIndex(i, j)];
         }
 
         return colArray;
@@ -105,7 +113,7 @@ public class Matrix {
         for (int i = 0; i < numRows; i++) {
             String[] row = new String[numCols];
             for (int j = 0; j < numCols; j++) {
-                row[j] = String.format(format,  array[i * numCols + j]);
+                row[j] = String.format(format,  array[getIndex(i, j)]);
             }
             string[i] = String.join(colDelimiter, row);
         }
@@ -145,7 +153,7 @@ public class Matrix {
                 throw new IllegalArgumentException("Inconsistent number of rows for 'nestedArray'");
             }
 
-            System.arraycopy(nestedArray[i], 0, array, i * numCols, numCols);
+            System.arraycopy(nestedArray[i], 0, array, getIndex(i, 0, numCols), numCols);
         }
         return create(array, numRows, numCols);
     }
