@@ -6,6 +6,7 @@ package agent.smith;
 
 import java.util.Arrays;
 import java.util.Objects;
+import java.lang.Math;
 
 public class Matrix {
 
@@ -63,24 +64,16 @@ public class Matrix {
 
     public double[] getRow(int i) {
         if (i < 0 || i >= numRows) {
-            int maxRows = numRows - 1;
-            if (maxRows < 0) {
-                maxRows = 0;
-            }
             throw new IllegalArgumentException(
-                    String.format("Row index (%d) has to be between 0 and %d", i, maxRows));
+                    String.format("Row index (%d) has to be between 0 and %d", i, Math.max(numRows - 1, 0)));
         }
         return Arrays.copyOfRange(array, i * numCols, (i + 1) * numCols);
     }
 
     public double[] getCol(int j) {
         if (j < 0 || j >= numCols) {
-            int maxCols = numCols - 1;
-            if (maxCols < 0) {
-                maxCols = 0;
-            }
             throw new IllegalArgumentException(
-                    String.format("Col index (%d) has to be between 0 and %d", j, maxCols));
+                    String.format("Col index (%d) has to be between 0 and %d", j, Math.max(numCols - 1, 0)));
         }
 
         double[] colArray = new double[numRows];
@@ -107,12 +100,26 @@ public class Matrix {
         return result;
     }
 
-//    @Override
-//    public String toString() {
-//        return "Matrix{" +
-//                "array=" + Arrays.toString(array) +
-//                '}';
-//    }
+    public String toString(String format, String rowDelimiter, String colDelimiter) {
+        String[] string = new String[numRows];
+        for (int i = 0; i < numRows; i++) {
+            String[] row = new String[numCols];
+            for (int j = 0; j < numCols; j++) {
+                row[j] = String.format(format,  array[i * numCols + j]);
+            }
+            string[i] = String.join(colDelimiter, row);
+        }
+        return "Matrix{" + String.join(rowDelimiter, string) + "}";
+    }
+
+    public String toString(String format) {
+        return toString(format, "\n       ", " ");
+    }
+
+    @Override
+    public String toString() {
+        return toString("%.4e");
+    }
 
     public static Matrix from(double[][] nestedArray) {
 

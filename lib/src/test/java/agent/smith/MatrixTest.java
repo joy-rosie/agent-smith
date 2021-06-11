@@ -418,6 +418,56 @@ public class MatrixTest {
     }
 
     @Test
+    public void testMatrixToString1() {
+        Matrix matrix = Matrix.create(new double[]{}, 0, 0);
+        String expected = "Matrix{}";
+
+        String string = matrix.toString();
+
+        assertEquals(expected, string);
+    }
+
+    @Test
+    public void testMatrixToString2() {
+        Matrix matrix = Matrix.create(new double[]{0}, 1, 1);
+        String expected = "Matrix{0.0000e+00}";
+
+        String string = matrix.toString();
+
+        assertEquals(expected, string);
+    }
+
+    @Test
+    public void testMatrixToString3() {
+        Matrix matrix = Matrix.create(new double[]{1, 2, 3, 4}, 2, 2);
+        String expected = "Matrix{1.0000e+00 2.0000e+00\n       3.0000e+00 4.0000e+00}";
+
+        String string = matrix.toString();
+
+        assertEquals(expected, string);
+    }
+
+    @Test
+    public void testMatrixToStringFormat() {
+        Matrix matrix = Matrix.create(new double[]{1, 2, 3, 4}, 2, 2);
+        String expected = "Matrix{1.000000e+00 2.000000e+00\n       3.000000e+00 4.000000e+00}";
+
+        String string = matrix.toString("%.6e");
+
+        assertEquals(expected, string);
+    }
+
+    @Test
+    public void testMatrixToStringFormatDelimiters() {
+        Matrix matrix = Matrix.create(new double[]{1, 2, 3, 4}, 2, 2);
+        String expected = "Matrix{1.000000e+00, 2.000000e+00; 3.000000e+00, 4.000000e+00}";
+
+        String string = matrix.toString("%.6e", "; ", ", ");
+
+        assertEquals(expected, string);
+    }
+
+    @Test
     public void testMatrixFactoryFromNestedArrayExceptionNull() {
         double[][] nestedArray = null;
         String expected = "'nestedArray' cannot be null";
