@@ -15,21 +15,28 @@ public class Matrix {
     private final int numCols;
     private final int length;
 
+    private static void validateNumRows(int numRows) {
+        if (numRows < 0) {
+            throw new IllegalArgumentException(
+                    String.format("'numRows' (%d) has to be a non negative integer", numRows));
+        }
+    }
+
+    private static void validateNumCols(int numCols) {
+        if (numCols < 0) {
+            throw new IllegalArgumentException(
+                    String.format("'numCols' (%d) has to be a non negative integer", numCols));
+        }
+    }
+
     private Matrix(double[] array, int numRows, int numCols) {
 
         this.numRows = numRows;
         this.numCols = numCols;
         this.length = this.numRows * this.numCols;
 
-        if (this.numRows < 0) {
-            throw new IllegalArgumentException(
-                    String.format("'numRows' (%d) has to be a non negative integer", this.numRows));
-        }
-
-        if (this.numCols < 0) {
-            throw new IllegalArgumentException(
-                    String.format("'numCols' (%d) has to be a non negative integer", this.numCols));
-        }
+        validateNumRows(this.numRows);
+        validateNumCols(this.numCols);
 
         if (array == null) {
             throw new NullPointerException("'array' cannot be null");
@@ -62,35 +69,45 @@ public class Matrix {
         return numCols;
     }
 
-    private static int getIndex(int i, int j, int numCols) {
+    void validateRowIndex(int i) {
+        if (numRows == 0) {
+            throw new IllegalStateException(
+                    String.format("Row index 'i' = (%d) cannot be used as matrix is empty", i));
+        }
+        if (i < 0 || i >= numRows) {
+            throw new IllegalArgumentException(
+                    String.format("Row index 'i' = (%d) has to be between 0 and %d", i, Math.max(numRows - 1, 0)));
+        }
+    }
+
+    void validateColIndex(int j) {
+        if (numCols == 0) {
+            throw new IllegalStateException(
+                    String.format("Col index 'j' = (%d) cannot be used as matrix is empty", j));
+        }
+        if (j < 0 || j >= numCols) {
+            throw new IllegalArgumentException(
+                    String.format("Col index 'j' = (%d) has to be between 0 and %d", j, Math.max(numCols - 1, 0)));
+        }
+    }
+
+    int getIndex(int i, int j) {
+        validateRowIndex(i);
+        validateColIndex(j);
         return i * numCols + j;
     }
 
-    private int getIndex(int i, int j) {
-        return getIndex(i, j, numCols);
-    }
-
     public double[] getRow(int i) {
-        if (i < 0 || i >= numRows) {
-            throw new IllegalArgumentException(
-                    String.format("Row index (%d) has to be between 0 and %d", i, Math.max(numRows - 1, 0)));
-        }
-        return Arrays.copyOfRange(array, getIndex(i, 0), getIndex(i, numCols));
+        int index = getIndex(i, 0);
+        return Arrays.copyOfRange(array, index, index + numCols);
     }
 
     public double[] getCol(int j) {
-        if (j < 0 || j >= numCols) {
-            throw new IllegalArgumentException(
-                    String.format("Col index (%d) has to be between 0 and %d", j, Math.max(numCols - 1, 0)));
-        }
-
-        double[] colArray = new double[numRows];
-
+        double[] col = new double[numRows];
         for (int i = 0; i < numRows; i++) {
-            colArray[i] = array[getIndex(i, j)];
+            col[i] = array[getIndex(i, j)];
         }
-
-        return colArray;
+        return col;
     }
 
     @Override
@@ -153,7 +170,7 @@ public class Matrix {
                 throw new IllegalArgumentException("Inconsistent number of rows for 'nestedArray'");
             }
 
-            System.arraycopy(nestedArray[i], 0, array, getIndex(i, 0, numCols), numCols);
+            System.arraycopy(nestedArray[i], 0, array, i * numCols, numCols);
         }
         return create(array, numRows, numCols);
     }
@@ -161,4 +178,13 @@ public class Matrix {
     public Matrix copy() {
         return create(array, numRows, numCols);
     }
+
+    public double get(int i, int j) {
+        return array[getIndex(i, j)];
+    }
+
+    public void set(int i, int j, double element) {
+        array[getIndex(i, j)] = element;
+    }
+
 }

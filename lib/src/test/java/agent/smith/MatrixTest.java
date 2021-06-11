@@ -136,25 +136,217 @@ public class MatrixTest {
     }
 
     @Test
-    public void testMatrixGetRowExceptionIndexNegative() {
+    public void testMatrixValidateRowIndexExceptionEmptyMatrix() {
         Matrix matrix = Matrix.create(new double[]{}, 0, 0);
-        int i = -1;
-        String expected = "Row index (-1) has to be between 0 and 0";
+        int i = 0;
+        String expected = "Row index 'i' = (0) cannot be used as matrix is empty";
 
-        Exception thrown = assertThrows(IllegalArgumentException.class, () -> matrix.getRow(i));
+        Exception thrown = assertThrows(IllegalStateException.class, () -> matrix.validateRowIndex(i));
 
         assertEquals(expected, thrown.getMessage());
     }
 
     @Test
-    public void testMatrixGetRowExceptionTooBig() {
-        Matrix matrix = Matrix.create(new double[]{}, 0, 0);
+    public void testMatrixValidateRowIndexExceptionTooBig() {
+        Matrix matrix = Matrix.create(new double[]{0}, 1, 1);
         int i = 1;
-        String expected = "Row index (1) has to be between 0 and 0";
+        String expected = "Row index 'i' = (1) has to be between 0 and 0";
 
-        Exception thrown = assertThrows(IllegalArgumentException.class, () -> matrix.getRow(i));
+        Exception thrown = assertThrows(IllegalArgumentException.class, () -> matrix.validateRowIndex(i));
 
         assertEquals(expected, thrown.getMessage());
+    }
+
+    @Test
+    public void testMatrixValidateRowIndexExceptionNegative() {
+        Matrix matrix = Matrix.create(new double[]{0}, 1, 1);
+        int i = -1;
+        String expected = "Row index 'i' = (-1) has to be between 0 and 0";
+
+        Exception thrown = assertThrows(IllegalArgumentException.class, () -> matrix.validateRowIndex(i));
+
+        assertEquals(expected, thrown.getMessage());
+    }
+
+    @Test
+    public void testMatrixValidateRow() {
+        Matrix matrix = Matrix.create(new double[]{0}, 1, 1);
+        int i = 0;
+
+        matrix.validateRowIndex(i);
+    }
+
+    @Test
+    public void testMatrixValidateColIndexExceptionEmptyMatrix() {
+        Matrix matrix = Matrix.create(new double[]{}, 0, 0);
+        int j = 0;
+        String expected = "Col index 'j' = (0) cannot be used as matrix is empty";
+
+        Exception thrown = assertThrows(IllegalStateException.class, () -> matrix.validateColIndex(j));
+
+        assertEquals(expected, thrown.getMessage());
+    }
+
+    @Test
+    public void testMatrixValidateColIndexExceptionTooBig() {
+        Matrix matrix = Matrix.create(new double[]{0}, 1, 1);
+        int j = 1;
+        String expected = "Col index 'j' = (1) has to be between 0 and 0";
+
+        Exception thrown = assertThrows(IllegalArgumentException.class, () -> matrix.validateColIndex(j));
+
+        assertEquals(expected, thrown.getMessage());
+    }
+
+    @Test
+    public void testMatrixValidateColIndexExceptionNegative() {
+        Matrix matrix = Matrix.create(new double[]{0}, 1, 1);
+        int j = -1;
+        String expected = "Col index 'j' = (-1) has to be between 0 and 0";
+
+        Exception thrown = assertThrows(IllegalArgumentException.class, () -> matrix.validateColIndex(j));
+
+        assertEquals(expected, thrown.getMessage());
+    }
+
+    @Test
+    public void testMatrixValidateCol() {
+        Matrix matrix = Matrix.create(new double[]{0}, 1, 1);
+        int j = 0;
+
+        matrix.validateColIndex(j);
+    }
+
+    @Test
+    public void testMatrixGetIndex1() {
+        Matrix matrix = Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 2, 3);
+        int i = 0;
+        int j = 0;
+        int expected = 0;
+
+        int index = matrix.getIndex(i, j);
+        assertEquals(expected, index);
+    }
+
+    @Test
+    public void testMatrixGetIndex2() {
+        Matrix matrix = Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 2, 3);
+        int i = 0;
+        int j = 1;
+        int expected = 1;
+
+        int index = matrix.getIndex(i, j);
+        assertEquals(expected, index);
+    }
+
+    @Test
+    public void testMatrixGetIndex3() {
+        Matrix matrix = Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 2, 3);
+        int i = 0;
+        int j = 2;
+        int expected = 2;
+
+        int index = matrix.getIndex(i, j);
+        assertEquals(expected, index);
+    }
+
+    @Test
+    public void testMatrixGetIndex4() {
+        Matrix matrix = Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 2, 3);
+        int i = 1;
+        int j = 0;
+        int expected = 3;
+
+        int index = matrix.getIndex(i, j);
+        assertEquals(expected, index);
+    }
+
+    @Test
+    public void testMatrixGetIndex5() {
+        Matrix matrix = Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 2, 3);
+        int i = 1;
+        int j = 1;
+        int expected = 4;
+
+        int index = matrix.getIndex(i, j);
+        assertEquals(expected, index);
+    }
+
+    @Test
+    public void testMatrixGetIndex6() {
+        Matrix matrix = Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 2, 3);
+        int i = 1;
+        int j = 2;
+        int expected = 5;
+
+        int index = matrix.getIndex(i, j);
+        assertEquals(expected, index);
+    }
+
+    @Test
+    public void testMatrixGetIndex7() {
+        Matrix matrix = Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 3, 2);
+        int i = 0;
+        int j = 0;
+        int expected = 0;
+
+        int index = matrix.getIndex(i, j);
+        assertEquals(expected, index);
+    }
+
+    @Test
+    public void testMatrixGetIndex8() {
+        Matrix matrix = Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 3, 2);
+        int i = 0;
+        int j = 1;
+        int expected = 1;
+
+        int index = matrix.getIndex(i, j);
+        assertEquals(expected, index);
+    }
+
+    @Test
+    public void testMatrixGetIndex9() {
+        Matrix matrix = Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 3, 2);
+        int i = 1;
+        int j = 0;
+        int expected = 2;
+
+        int index = matrix.getIndex(i, j);
+        assertEquals(expected, index);
+    }
+
+    @Test
+    public void testMatrixGetIndex10() {
+        Matrix matrix = Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 3, 2);
+        int i = 1;
+        int j = 1;
+        int expected = 3;
+
+        int index = matrix.getIndex(i, j);
+        assertEquals(expected, index);
+    }
+
+    @Test
+    public void testMatrixGetIndex11() {
+        Matrix matrix = Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 3, 2);
+        int i = 2;
+        int j = 0;
+        int expected = 4;
+
+        int index = matrix.getIndex(i, j);
+        assertEquals(expected, index);
+    }
+
+    @Test
+    public void testMatrixGetIndex12() {
+        Matrix matrix = Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 3, 2);
+        int i = 2;
+        int j = 1;
+        int expected = 5;
+
+        int index = matrix.getIndex(i, j);
+        assertEquals(expected, index);
     }
 
     @Test
@@ -210,28 +402,6 @@ public class MatrixTest {
         double[] row = matrix.getRow(i);
 
         assertArrayEquals(expected, row, 0.0);
-    }
-
-    @Test
-    public void testMatrixGetColExceptionIndexNegative() {
-        Matrix matrix = Matrix.create(new double[]{}, 0, 0);
-        int j = -1;
-        String expected = "Col index (-1) has to be between 0 and 0";
-
-        Exception thrown = assertThrows(IllegalArgumentException.class, () -> matrix.getCol(j));
-
-        assertEquals(expected, thrown.getMessage());
-    }
-
-    @Test
-    public void testMatrixGetColExceptionTooBig() {
-        Matrix matrix = Matrix.create(new double[]{}, 0, 0);
-        int j = 1;
-        String expected = "Col index (1) has to be between 0 and 0";
-
-        Exception thrown = assertThrows(IllegalArgumentException.class, () -> matrix.getCol(j));
-
-        assertEquals(expected, thrown.getMessage());
     }
 
     @Test
@@ -596,6 +766,58 @@ public class MatrixTest {
 
         assertEquals(matrix, copiedMatrix);
         assertNotSame(matrix, copiedMatrix);
+    }
+
+    @Test
+    public void testMatrixGet1() {
+        Matrix matrix = Matrix.create(new double[]{1, 2, 3, 4}, 2 ,2);
+        int i = 0;
+        int j = 0;
+        double expected = 1;
+
+        double element = matrix.get(i, j);
+
+        assertEquals(expected, element, 0.0);
+    }
+
+    @Test
+    public void testMatrixGet2() {
+        Matrix matrix = Matrix.create(new double[]{1, 2, 3, 4}, 2 ,2);
+        int i = 1;
+        int j = 1;
+        double expected = 4;
+
+        double element = matrix.get(i, j);
+
+        assertEquals(expected, element, 0.0);
+    }
+
+    @Test
+    public void testMatrixSet1() {
+        Matrix matrix = Matrix.create(new double[]{1, 2, 3, 4}, 2 ,2);
+        int i = 0;
+        int j = 0;
+        double element = 4;
+        double expected = 4;
+
+        matrix.set(i, j, element);
+        double elementSet = matrix.get(i, j);
+
+        assertEquals(expected, elementSet, 0.0);
+    }
+
+    @Test
+    public void testMatrixSet2() {
+        Matrix matrix = Matrix.create(new double[]{1, 2, 3, 4}, 2 ,2);
+        int i = 1;
+        int j = 1;
+        double element = 1;
+        double expected = 1;
+
+        matrix.set(i, j, element);
+        double elementSet = matrix.get(i, j);
+
+        assertEquals(expected, elementSet, 0.0);
     }
 
 }
