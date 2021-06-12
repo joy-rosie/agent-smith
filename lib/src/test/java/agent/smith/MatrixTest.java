@@ -820,5 +820,162 @@ public class MatrixTest {
         assertEquals(expected, elementSet, 0.0);
     }
 
+    @Test
+    public void testMatrixFactoryOfNegativeNumRows() {
+        double element = 1;
+        int numRows = -1;
+        int numCols = 0;
+        String expected = "'numRows' (-1) has to be a non negative integer";
+
+        Exception thrown = assertThrows(IllegalArgumentException.class, () -> Matrix.of(element, numRows, numCols));
+
+        assertEquals(expected, thrown.getMessage());
+    }
+
+    @Test
+    public void testMatrixFactoryOfNegativeNumCols() {
+        double element = 1;
+        int numRows = 0;
+        int numCols = -1;
+        String expected = "'numCols' (-1) has to be a non negative integer";
+
+        Exception thrown = assertThrows(IllegalArgumentException.class, () -> Matrix.of(element, numRows, numCols));
+
+        assertEquals(expected, thrown.getMessage());
+    }
+
+    @Test
+    public void testMatrixFactoryOf1() {
+        double element = 0;
+        int numRows = 0;
+        int numCols = 0;
+        Matrix expected = Matrix.create(new double[]{}, 0, 0);
+
+        Matrix matrix = Matrix.of(element, numRows, numCols);
+
+        assertEquals(expected, matrix);
+    }
+
+    @Test
+    public void testMatrixFactoryOf2() {
+        double element = 1;
+        int numRows = 1;
+        int numCols = 1;
+        Matrix expected = Matrix.create(new double[]{1}, 1, 1);
+
+        Matrix matrix = Matrix.of(element, numRows, numCols);
+
+        assertEquals(expected, matrix);
+    }
+
+    @Test
+    public void testMatrixFactoryOf3() {
+        double element = 1;
+        int numRows = 2;
+        int numCols = 3;
+        Matrix expected = Matrix.create(new double[]{1, 1, 1, 1, 1, 1}, 2, 3);
+
+        Matrix matrix = Matrix.of(element, numRows, numCols);
+
+        assertEquals(expected, matrix);
+    }
+
+    @Test
+    public void testMatrixFactoryOfZerosRectangular() {
+        int numRows = 2;
+        int numCols = 3;
+        Matrix expected = Matrix.create(new double[]{0, 0, 0, 0, 0, 0}, 2, 3);
+
+        Matrix matrix = Matrix.ofZeros(numRows, numCols);
+
+        assertEquals(expected, matrix);
+    }
+
+    @Test
+    public void testMatrixFactoryOfZerosSquare() {
+        int numRowsAndCols = 2;
+        Matrix expected = Matrix.create(new double[]{0, 0, 0, 0}, 2, 2);
+
+        Matrix matrix = Matrix.ofZeros(numRowsAndCols);
+
+        assertEquals(expected, matrix);
+    }
+
+    @Test
+    public void testMatrixFactoryOfOnesRectangular() {
+        int numRows = 2;
+        int numCols = 3;
+        Matrix expected = Matrix.create(new double[]{1, 1, 1, 1, 1, 1}, 2, 3);
+
+        Matrix matrix = Matrix.ofOnes(numRows, numCols);
+
+        assertEquals(expected, matrix);
+    }
+
+    @Test
+    public void testMatrixFactoryOfOnesSquare() {
+        int numRowsAndCols = 2;
+        Matrix expected = Matrix.create(new double[]{1, 1, 1, 1}, 2, 2);
+
+        Matrix matrix = Matrix.ofOnes(numRowsAndCols);
+
+        assertEquals(expected, matrix);
+    }
+
+    @Test
+    public void testMatrixSetDiagonal1() {
+        Matrix matrix = Matrix.ofZeros(2, 3);
+        double value = 1;
+        Matrix expected = Matrix.create(new double[]{1, 0, 0, 0, 1, 0}, 2, 3);
+
+        matrix.setDiagonal(value);
+
+        assertEquals(expected, matrix);
+    }
+
+    @Test
+    public void testMatrixSetDiagonal2() {
+        Matrix matrix = Matrix.ofZeros(3, 2);
+        double value = 1;
+        Matrix expected = Matrix.create(new double[]{1, 0, 0, 1, 0, 0}, 3, 2);
+
+        matrix.setDiagonal(value);
+
+        assertEquals(expected, matrix);
+    }
+
+    @Test
+    public void testMatrixSetDiagonal3() {
+        Matrix matrix = Matrix.ofZeros(2, 2);
+        double value = 1;
+        Matrix expected = Matrix.create(new double[]{1, 0, 0, 1}, 2, 2);
+
+        matrix.setDiagonal(value);
+
+        assertEquals(expected, matrix);
+    }
+
+    @Test
+    public void testMatrixInstanceOfEyeRectangular() {
+        int numRows = 2;
+        int numCols = 3;
+        Matrix expected = Matrix.create(new double[]{1, 0, 0, 0, 1, 0}, 2, 3);
+
+        Matrix matrix = Matrix.instanceOfEye(numRows, numCols);
+
+        assertEquals(expected, matrix);
+    }
+
+
+    @Test
+    public void testMatrixInstanceOfEyeSquare() {
+        int numRowsAndCols = 2;
+        Matrix expected = Matrix.create(new double[]{1, 0, 0, 1}, 2, 2);
+
+        Matrix matrix = Matrix.instanceOfEye(numRowsAndCols);
+
+        assertEquals(expected, matrix);
+    }
+
 }
 

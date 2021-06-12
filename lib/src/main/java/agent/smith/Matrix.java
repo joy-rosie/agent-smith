@@ -29,14 +29,18 @@ public class Matrix {
         }
     }
 
+    private static void validateNumRowsNumCols(int numRows, int numCols) {
+        validateNumRows(numRows);
+        validateNumCols(numCols);
+    }
+
     private Matrix(double[] array, int numRows, int numCols) {
 
         this.numRows = numRows;
         this.numCols = numCols;
         this.length = this.numRows * this.numCols;
 
-        validateNumRows(this.numRows);
-        validateNumCols(this.numCols);
+        validateNumRowsNumCols(numRows, numCols);
 
         if (array == null) {
             throw new NullPointerException("'array' cannot be null");
@@ -49,6 +53,18 @@ public class Matrix {
 
         this.array = new double[this.length];
         System.arraycopy(array, 0, this.array, 0, this.length);
+    }
+
+    private Matrix(double element, int numRows, int numCols) {
+
+        this.numRows = numRows;
+        this.numCols = numCols;
+        length = this.numRows * this.numCols;
+
+        validateNumRowsNumCols(numRows, numCols);
+
+        array = new double[length];
+        Arrays.fill(array, element);
     }
 
     public static Matrix create(double[] array, int numRows, int numCols) {
@@ -185,6 +201,42 @@ public class Matrix {
 
     public void set(int i, int j, double element) {
         array[getIndex(i, j)] = element;
+    }
+
+    public static Matrix of(double element, int numRows, int numCols) {
+        return new Matrix(element, numRows, numCols);
+    }
+
+    public static Matrix ofZeros(int numRows, int numCols) {
+        return Matrix.of(0, numRows, numCols);
+    }
+
+    public static Matrix ofZeros(int numRowsAndCols) {
+        return Matrix.ofZeros(numRowsAndCols, numRowsAndCols);
+    }
+
+    public static Matrix ofOnes(int numRows, int numCols) {
+        return Matrix.of(1, numRows, numCols);
+    }
+
+    public static Matrix ofOnes(int numRowsAndCols) {
+        return Matrix.ofOnes(numRowsAndCols, numRowsAndCols);
+    }
+
+    public void setDiagonal(double value) {
+        for (int i = 0, n = Math.min(numRows, numCols); i < n; i++) {
+            set(i, i, value);
+        }
+    }
+
+    public static Matrix instanceOfEye(int numRows, int numCols) {
+        Matrix matrix = Matrix.ofZeros(numRows, numCols);
+        matrix.setDiagonal(1);
+        return matrix;
+    }
+
+    public static Matrix instanceOfEye(int numRowsAndCols) {
+        return Matrix.instanceOfEye(numRowsAndCols, numRowsAndCols);
     }
 
 }
