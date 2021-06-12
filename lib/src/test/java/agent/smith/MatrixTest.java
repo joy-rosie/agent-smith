@@ -5,6 +5,8 @@ package agent.smith;
 
 import org.junit.Test;
 
+import java.util.Random;
+
 import static org.junit.Assert.*;
 
 public class MatrixTest {
@@ -975,6 +977,79 @@ public class MatrixTest {
         Matrix matrix = Matrix.instanceOfEye(numRowsAndCols);
 
         assertEquals(expected, matrix);
+    }
+
+    @Test
+    public void testMatrixInstanceOfRandom1() {
+        Random r = new Random();
+        r.setSeed(0);
+        int numRows = 2;
+        int numCols = 3;
+        Matrix expected = Matrix.create(new double[]{
+                0.8025330637390305, -0.9015460884175122, 2.080920790428163,
+                0.7637707684364894, 0.9845745328825128, -1.6834122587673428}, 2, 3);
+
+        Matrix matrix = Matrix.instanceOfRandom(r, numRows, numCols);
+
+        assertEquals(expected, matrix);
+    }
+
+    @Test
+    public void testMatrixInstanceOfRandom2() {
+        Random r = new Random();
+        r.setSeed(0);
+        int numRowsAndCols = 2;
+        Matrix expected = Matrix.create(new double[]{0.8025330637390305, -0.9015460884175122,
+                2.080920790428163, 0.7637707684364894}, 2, 2);
+
+        Matrix matrix = Matrix.instanceOfRandom(r, numRowsAndCols);
+
+        assertEquals(expected, matrix);
+    }
+
+    @Test
+    public void testMatrixInstanceOfRandom3() {
+        long seed = 0;
+        int numRows = 2;
+        int numCols = 3;
+        Matrix expected = Matrix.create(new double[]{
+                0.8025330637390305, -0.9015460884175122, 2.080920790428163,
+                0.7637707684364894, 0.9845745328825128, -1.6834122587673428}, 2, 3);
+
+        Matrix matrix = Matrix.instanceOfRandom(seed, numRows, numCols);
+
+        assertEquals(expected, matrix);
+    }
+
+    @Test
+    public void testMatrixInstanceOfRandom4() {
+        long seed = 0;
+        int numRowsAndCols = 2;
+        Matrix expected = Matrix.create(new double[]{0.8025330637390305, -0.9015460884175122,
+                2.080920790428163, 0.7637707684364894}, 2, 2);
+
+        Matrix matrix = Matrix.instanceOfRandom(seed, numRowsAndCols);
+
+        assertEquals(expected, matrix);
+    }
+
+    @Test
+    public void testMatrixInstanceOfRandom5() {
+        int numRows = 2;
+        int numCols = 3;
+
+        Matrix matrix = Matrix.instanceOfRandom(numRows, numCols);
+
+        assertEquals(Matrix.class, matrix.getClass());
+    }
+
+    @Test
+    public void testMatrixInstanceOfRandom6() {
+        int numRowsAndCols = 2;
+
+        Matrix matrix = Matrix.instanceOfRandom(numRowsAndCols);
+
+        assertEquals(Matrix.class, matrix.getClass());
     }
 
 }

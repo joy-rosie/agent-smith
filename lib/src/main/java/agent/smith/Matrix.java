@@ -7,6 +7,7 @@ package agent.smith;
 import java.util.Arrays;
 import java.util.Objects;
 import java.lang.Math;
+import java.util.Random;
 
 public class Matrix {
 
@@ -208,19 +209,19 @@ public class Matrix {
     }
 
     public static Matrix ofZeros(int numRows, int numCols) {
-        return Matrix.of(0, numRows, numCols);
+        return of(0, numRows, numCols);
     }
 
     public static Matrix ofZeros(int numRowsAndCols) {
-        return Matrix.ofZeros(numRowsAndCols, numRowsAndCols);
+        return ofZeros(numRowsAndCols, numRowsAndCols);
     }
 
     public static Matrix ofOnes(int numRows, int numCols) {
-        return Matrix.of(1, numRows, numCols);
+        return of(1, numRows, numCols);
     }
 
     public static Matrix ofOnes(int numRowsAndCols) {
-        return Matrix.ofOnes(numRowsAndCols, numRowsAndCols);
+        return ofOnes(numRowsAndCols, numRowsAndCols);
     }
 
     public void setDiagonal(double value) {
@@ -237,6 +238,39 @@ public class Matrix {
 
     public static Matrix instanceOfEye(int numRowsAndCols) {
         return Matrix.instanceOfEye(numRowsAndCols, numRowsAndCols);
+    }
+
+    public static Matrix instanceOfRandom(Random r, int numRows, int numCols) {
+        Matrix matrix = Matrix.ofZeros(numRows, numCols);
+        for (int i = 0; i < matrix.numRows; i++) {
+            for (int j = 0; j < matrix.numCols; j++) {
+                matrix.set(i, j, r.nextGaussian());
+            }
+        }
+        return matrix;
+    }
+
+    public static Matrix instanceOfRandom(Random r, int numRowsAndCols) {
+        return instanceOfRandom(r, numRowsAndCols, numRowsAndCols);
+    }
+
+    public static Matrix instanceOfRandom(long seed, int numRows, int numCols) {
+        Random r = new Random();
+        r.setSeed(seed);
+        return instanceOfRandom(r, numRows, numCols);
+    }
+
+    public static Matrix instanceOfRandom(long seed, int numRowsAndCols) {
+        return instanceOfRandom(seed, numRowsAndCols, numRowsAndCols);
+    }
+
+    public static Matrix instanceOfRandom(int numRows, int numCols) {
+        Random r = new Random();
+        return instanceOfRandom(r, numRows, numCols);
+    }
+
+    public static Matrix instanceOfRandom(int numRowsAndCols) {
+        return instanceOfRandom(numRowsAndCols, numRowsAndCols);
     }
 
 }
