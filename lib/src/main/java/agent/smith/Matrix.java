@@ -208,6 +208,10 @@ public class Matrix {
         return new Matrix(element, numRows, numCols);
     }
 
+    public static Matrix create(int numRows, int numCols) {
+        return of(Double.NaN, numRows, numCols);
+    }
+
     public static Matrix ofZeros(int numRows, int numCols) {
         return of(0, numRows, numCols);
     }

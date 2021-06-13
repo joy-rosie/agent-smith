@@ -883,6 +883,19 @@ public class MatrixTest {
     }
 
     @Test
+    public void testMatrixFactoryCreateNaN() {
+        int numRows = 2;
+        int numCols = 3;
+        Matrix expected = Matrix.create(
+                new double[]{Double.NaN, Double.NaN, Double.NaN, Double.NaN, Double.NaN, Double.NaN},
+                2, 3);
+
+        Matrix matrix = Matrix.create(numRows, numCols);
+
+        assertEquals(expected, matrix);
+    }
+
+    @Test
     public void testMatrixFactoryOfZerosRectangular() {
         int numRows = 2;
         int numCols = 3;
