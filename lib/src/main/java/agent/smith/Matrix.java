@@ -35,6 +35,22 @@ public class Matrix {
         validateNumCols();
     }
 
+    private Matrix(double value, int numRows, int numCols) throws MatrixIllegalArgumentException {
+
+        this.numRows = numRows;
+        this.numCols = numCols;
+        length = this.numRows * this.numCols;
+
+        validateNumRowsNumCols();
+
+        array = new double[length];
+        Arrays.fill(array, value);
+    }
+
+    public static Matrix of(double element, int numRows, int numCols) {
+        return new Matrix(element, numRows, numCols);
+    }
+
     private Matrix(double[] array, int numRows, int numCols) throws MatrixIllegalArgumentException {
 
         this.numRows = numRows;
@@ -56,20 +72,64 @@ public class Matrix {
         System.arraycopy(array, 0, this.array, 0, this.length);
     }
 
-    private Matrix(double element, int numRows, int numCols) throws MatrixIllegalArgumentException {
-
-        this.numRows = numRows;
-        this.numCols = numCols;
-        length = this.numRows * this.numCols;
-
-        validateNumRowsNumCols();
-
-        array = new double[length];
-        Arrays.fill(array, element);
-    }
-
     public static Matrix create(double[] array, int numRows, int numCols) throws MatrixIllegalArgumentException {
         return new Matrix(array, numRows, numCols);
+    }
+
+    public static Matrix create(int numRows, int numCols) {
+        return of(Double.NaN, numRows, numCols);
+    }
+
+    public static Matrix ofZeros(int numRows, int numCols) {
+        return of(0, numRows, numCols);
+    }
+
+    public static Matrix ofZeros(int numRowsAndCols) {
+        return ofZeros(numRowsAndCols, numRowsAndCols);
+    }
+
+    public static Matrix ofOnes(int numRows, int numCols) {
+        return of(1, numRows, numCols);
+    }
+
+    public static Matrix ofOnes(int numRowsAndCols) {
+        return ofOnes(numRowsAndCols, numRowsAndCols);
+    }
+
+    public static Matrix from(double[][] nestedArray) throws MatrixIllegalArgumentException {
+
+        if (nestedArray == null) {
+            throw new MatrixIllegalArgumentException("'nestedArray' cannot be null");
+        }
+
+        int numRows = nestedArray.length;
+        if (numRows == 0) {
+            throw new MatrixIllegalArgumentException("'nestedArray' cannot be empty");
+        }
+
+        if (nestedArray[0] == null) {
+            throw new MatrixIllegalArgumentException("'nestedArray[0]' cannot be null");
+        }
+
+        int numCols = nestedArray[0].length;
+        if (numCols == 0) {
+            throw new MatrixIllegalArgumentException("'nestedArray' cannot be empty");
+        }
+
+        double[] array = new double[numRows * numCols];
+        for (int indexRow = 0; indexRow < numRows; indexRow++) {
+
+            if (nestedArray[indexRow] == null) {
+                throw new MatrixIllegalArgumentException(String.format("'nestedArray[%d]' cannot be null", indexRow));
+            }
+
+            if (nestedArray[indexRow].length != numCols) {
+                throw new MatrixIllegalArgumentException("Inconsistent number of rows for 'nestedArray'");
+            }
+
+            System.arraycopy(nestedArray[indexRow], 0, array, indexRow * numCols, numCols);
+        }
+        return create(array, numRows, numCols);
     }
 
     public double[] getArray() {
@@ -172,42 +232,6 @@ public class Matrix {
         return toString("%.4e");
     }
 
-    public static Matrix from(double[][] nestedArray) throws MatrixIllegalArgumentException {
-
-        if (nestedArray == null) {
-            throw new MatrixIllegalArgumentException("'nestedArray' cannot be null");
-        }
-
-        int numRows = nestedArray.length;
-        if (numRows == 0) {
-            throw new MatrixIllegalArgumentException("'nestedArray' cannot be empty");
-        }
-
-        if (nestedArray[0] == null) {
-            throw new MatrixIllegalArgumentException("'nestedArray[0]' cannot be null");
-        }
-
-        int numCols = nestedArray[0].length;
-        if (numCols == 0) {
-            throw new MatrixIllegalArgumentException("'nestedArray' cannot be empty");
-        }
-
-        double[] array = new double[numRows * numCols];
-        for (int i=0; i < numRows; i++) {
-
-            if (nestedArray[i] == null) {
-                throw new MatrixIllegalArgumentException(String.format("'nestedArray[%d]' cannot be null", i));
-            }
-
-            if (nestedArray[i].length != numCols) {
-                throw new MatrixIllegalArgumentException("Inconsistent number of rows for 'nestedArray'");
-            }
-
-            System.arraycopy(nestedArray[i], 0, array, i * numCols, numCols);
-        }
-        return create(array, numRows, numCols);
-    }
-
     public Matrix copy() {
         return create(array, numRows, numCols);
     }
@@ -218,30 +242,6 @@ public class Matrix {
 
     public void set(int i, int j, double element) {
         array[getIndex(i, j)] = element;
-    }
-
-    public static Matrix of(double element, int numRows, int numCols) {
-        return new Matrix(element, numRows, numCols);
-    }
-
-    public static Matrix create(int numRows, int numCols) {
-        return of(Double.NaN, numRows, numCols);
-    }
-
-    public static Matrix ofZeros(int numRows, int numCols) {
-        return of(0, numRows, numCols);
-    }
-
-    public static Matrix ofZeros(int numRowsAndCols) {
-        return ofZeros(numRowsAndCols, numRowsAndCols);
-    }
-
-    public static Matrix ofOnes(int numRows, int numCols) {
-        return of(1, numRows, numCols);
-    }
-
-    public static Matrix ofOnes(int numRowsAndCols) {
-        return ofOnes(numRowsAndCols, numRowsAndCols);
     }
 
     public void setDiagonal(double value) {
