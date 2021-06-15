@@ -72,7 +72,6 @@ public class MatrixTest {
         assertArrayEquals(expectedArray, matrix.getArray());
         assertEquals(expectedNumRows, matrix.getNumRows());
         assertEquals(expectedNumCols, matrix.getNumCols());
-        assertTrue(false);
     }
 
 //    @Nested
