@@ -86,24 +86,18 @@ public class Matrix {
         return numCols;
     }
 
-    void validateRowIndex(int i) throws MatrixIllegalArgumentException {
-        if (i < 0 || i >= numRows) {
+    void validateRowIndex(int rowIndex) throws MatrixIllegalArgumentException {
+        if (rowIndex < 0 || rowIndex >= numRows) {
             throw new MatrixIllegalArgumentException(
-                    String.format("Row index 'i' = (%d) has to be between 0 and %d", i, this.numRows - 1));
+                    String.format("'rowIndex' = (%d) has to be between 0 and %d", rowIndex, this.numRows - 1));
         }
     }
 
-    void validateColIndex(int j) throws MatrixIllegalArgumentException {
-        if (j < 0 || j >= numCols) {
+    void validateColIndex(int colIndex) throws MatrixIllegalArgumentException {
+        if (colIndex < 0 || colIndex >= numCols) {
             throw new MatrixIllegalArgumentException(
-                    String.format("Col index 'j' = (%d) has to be between 0 and %d", j, this.numCols - 1));
+                    String.format("'colIndex' = (%d) has to be between 0 and %d", colIndex, this.numCols - 1));
         }
-    }
-
-    int getIndex(int i, int j) throws MatrixIllegalArgumentException {
-        validateRowIndex(i);
-        validateColIndex(j);
-        return i * numCols + j;
     }
 
     void validateIndex(int index) throws MatrixIllegalArgumentException {
@@ -111,6 +105,12 @@ public class Matrix {
             throw new MatrixIllegalArgumentException(
                     String.format("'index' = (%d) has to be between 0 and %d", index, this.length - 1));
         }
+    }
+
+    int getIndex(int rowIndex, int colIndex) throws MatrixIllegalArgumentException {
+        validateRowIndex(rowIndex);
+        validateColIndex(colIndex);
+        return rowIndex * numCols + colIndex;
     }
 
     int getRowIndex(int index) throws MatrixIllegalArgumentException {
@@ -123,15 +123,15 @@ public class Matrix {
         return index % numCols;
     }
 
-    public double[] getRow(int i) throws MatrixIllegalArgumentException {
-        int index = getIndex(i, 0);
+    public double[] getRow(int rowIndex) throws MatrixIllegalArgumentException {
+        int index = getIndex(rowIndex, 0);
         return Arrays.copyOfRange(array, index, index + numCols);
     }
 
-    public double[] getCol(int j) throws MatrixIllegalArgumentException {
+    public double[] getCol(int colIndex) throws MatrixIllegalArgumentException {
         double[] col = new double[numRows];
-        for (int i = 0; i < numRows; i++) {
-            col[i] = array[getIndex(i, j)];
+        for (int rowIndex = 0; rowIndex < numRows; rowIndex++) {
+            col[rowIndex] = array[getIndex(rowIndex, colIndex)];
         }
         return col;
     }
