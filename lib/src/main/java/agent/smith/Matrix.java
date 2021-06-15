@@ -16,39 +16,39 @@ public class Matrix {
     private final int numCols;
     private final int length;
 
-    private static void validateNumRows(int numRows) {
-        if (numRows < 0) {
-            throw new IllegalArgumentException(
-                    String.format("'numRows' (%d) has to be a non negative integer", numRows));
+    private void validateNumRows() throws MatrixIllegalArgumentException {
+        if (numRows <= 0) {
+            throw new MatrixIllegalArgumentException(
+                    String.format("'numRows' (%d) has to be a positive integer", numRows));
         }
     }
 
-    private static void validateNumCols(int numCols) {
-        if (numCols < 0) {
-            throw new IllegalArgumentException(
-                    String.format("'numCols' (%d) has to be a non negative integer", numCols));
+    private void validateNumCols() throws MatrixIllegalArgumentException {
+        if (numCols <= 0) {
+            throw new MatrixIllegalArgumentException(
+                    String.format("'numCols' (%d) has to be a positive integer", numCols));
         }
     }
 
-    private static void validateNumRowsNumCols(int numRows, int numCols) {
-        validateNumRows(numRows);
-        validateNumCols(numCols);
+    private void validateNumRowsNumCols() throws MatrixIllegalArgumentException {
+        validateNumRows();
+        validateNumCols();
     }
 
-    private Matrix(double[] array, int numRows, int numCols) {
+    private Matrix(double[] array, int numRows, int numCols) throws MatrixIllegalArgumentException {
 
         this.numRows = numRows;
         this.numCols = numCols;
         this.length = this.numRows * this.numCols;
 
-        validateNumRowsNumCols(numRows, numCols);
+        validateNumRowsNumCols();
 
         if (array == null) {
-            throw new NullPointerException("'array' cannot be null");
+            throw new MatrixIllegalArgumentException("'array' cannot be null");
         }
 
         if (array.length != this.length) {
-            throw new IllegalArgumentException(String.format(
+            throw new MatrixIllegalArgumentException(String.format(
                     "Length of 'array' (%d) does not match 'numRows' * 'numCols' (%d)", array.length, this.length));
         }
 
@@ -56,19 +56,19 @@ public class Matrix {
         System.arraycopy(array, 0, this.array, 0, this.length);
     }
 
-    private Matrix(double element, int numRows, int numCols) {
+    private Matrix(double element, int numRows, int numCols) throws MatrixIllegalArgumentException {
 
         this.numRows = numRows;
         this.numCols = numCols;
         length = this.numRows * this.numCols;
 
-        validateNumRowsNumCols(numRows, numCols);
+        validateNumRowsNumCols();
 
         array = new double[length];
         Arrays.fill(array, element);
     }
 
-    public static Matrix create(double[] array, int numRows, int numCols) {
+    public static Matrix create(double[] array, int numRows, int numCols) throws MatrixIllegalArgumentException {
         return new Matrix(array, numRows, numCols);
     }
 
@@ -86,40 +86,49 @@ public class Matrix {
         return numCols;
     }
 
-    void validateRowIndex(int i) {
-        if (numRows == 0) {
-            throw new IllegalStateException(
-                    String.format("Row index 'i' = (%d) cannot be used as matrix is empty", i));
-        }
+    void validateRowIndex(int i) throws MatrixIllegalArgumentException {
         if (i < 0 || i >= numRows) {
-            throw new IllegalArgumentException(
-                    String.format("Row index 'i' = (%d) has to be between 0 and %d", i, Math.max(numRows - 1, 0)));
+            throw new MatrixIllegalArgumentException(
+                    String.format("Row index 'i' = (%d) has to be between 0 and %d", i, this.numRows - 1));
         }
     }
 
-    void validateColIndex(int j) {
-        if (numCols == 0) {
-            throw new IllegalStateException(
-                    String.format("Col index 'j' = (%d) cannot be used as matrix is empty", j));
-        }
+    void validateColIndex(int j) throws MatrixIllegalArgumentException {
         if (j < 0 || j >= numCols) {
-            throw new IllegalArgumentException(
-                    String.format("Col index 'j' = (%d) has to be between 0 and %d", j, Math.max(numCols - 1, 0)));
+            throw new MatrixIllegalArgumentException(
+                    String.format("Col index 'j' = (%d) has to be between 0 and %d", j, this.numCols - 1));
         }
     }
 
-    int getIndex(int i, int j) {
+    int getIndex(int i, int j) throws MatrixIllegalArgumentException {
         validateRowIndex(i);
         validateColIndex(j);
         return i * numCols + j;
     }
 
-    public double[] getRow(int i) {
+    void validateIndex(int index) throws MatrixIllegalArgumentException {
+        if (index < 0 || index >= this.length) {
+            throw new MatrixIllegalArgumentException(
+                    String.format("'index' = (%d) has to be between 0 and %d", index, this.length - 1));
+        }
+    }
+
+    int getRowIndex(int index) throws MatrixIllegalArgumentException {
+        validateIndex(index);
+        return index / numCols;
+    }
+
+    int getColIndex(int index) throws MatrixIllegalArgumentException {
+        validateIndex(index);
+        return index % numCols;
+    }
+
+    public double[] getRow(int i) throws MatrixIllegalArgumentException {
         int index = getIndex(i, 0);
         return Arrays.copyOfRange(array, index, index + numCols);
     }
 
-    public double[] getCol(int j) {
+    public double[] getCol(int j) throws MatrixIllegalArgumentException {
         double[] col = new double[numRows];
         for (int i = 0; i < numRows; i++) {
             col[i] = array[getIndex(i, j)];
@@ -163,28 +172,35 @@ public class Matrix {
         return toString("%.4e");
     }
 
-    public static Matrix from(double[][] nestedArray) {
+    public static Matrix from(double[][] nestedArray) throws MatrixIllegalArgumentException {
 
         if (nestedArray == null) {
-            throw new NullPointerException("'nestedArray' cannot be null");
-        }
-
-        if (nestedArray[0] == null) {
-            throw new NullPointerException("'nestedArray[0]' cannot be null");
+            throw new MatrixIllegalArgumentException("'nestedArray' cannot be null");
         }
 
         int numRows = nestedArray.length;
+        if (numRows == 0) {
+            throw new MatrixIllegalArgumentException("'nestedArray' cannot be empty");
+        }
+
+        if (nestedArray[0] == null) {
+            throw new MatrixIllegalArgumentException("'nestedArray[0]' cannot be null");
+        }
+
         int numCols = nestedArray[0].length;
+        if (numCols == 0) {
+            throw new MatrixIllegalArgumentException("'nestedArray' cannot be empty");
+        }
 
         double[] array = new double[numRows * numCols];
         for (int i=0; i < numRows; i++) {
 
             if (nestedArray[i] == null) {
-                throw new NullPointerException(String.format("'nestedArray[%d]' cannot be null", i));
+                throw new MatrixIllegalArgumentException(String.format("'nestedArray[%d]' cannot be null", i));
             }
 
             if (nestedArray[i].length != numCols) {
-                throw new IllegalArgumentException("Inconsistent number of rows for 'nestedArray'");
+                throw new MatrixIllegalArgumentException("Inconsistent number of rows for 'nestedArray'");
             }
 
             System.arraycopy(nestedArray[i], 0, array, i * numCols, numCols);
@@ -276,5 +292,18 @@ public class Matrix {
     public static Matrix instanceOfRandom(int numRowsAndCols) {
         return instanceOfRandom(numRowsAndCols, numRowsAndCols);
     }
+
+//    public static Matrix add(Matrix A, Matrix B) {
+//        if (numRows != other.numRows || numCols != other.numCols) {
+//            throw new MatrixIllegalArgumentException(String.format(
+//                    "Dimension mismatch, numRows: %d vs %d and numCols: %d vs %d",
+//                    numRows, other.numRows, numCols, other.numCols));
+//        }
+//        Matrix matrix = Matrix.create(numRows, numCols);
+//        for (int index = 0; index < matrix.length; index++) {
+//            matrix.array[index] = array[index] + other.array[index];
+//        }
+//        return matrix;
+//    }
 
 }

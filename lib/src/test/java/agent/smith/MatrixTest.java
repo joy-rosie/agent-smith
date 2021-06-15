@@ -12,25 +12,25 @@ import static org.junit.Assert.*;
 public class MatrixTest {
 
     @Test
-    public void testMatrixFactoryCreateNegativeNumRows() {
+    public void testMatrixFactoryCreateNonPositiveNumRows() {
         double[] array = new double[]{};
         int numRows = -1;
         int numCols = 0;
-        String expected = "'numRows' (-1) has to be a non negative integer";
+        String expected = "'numRows' (-1) has to be a positive integer";
 
-        Exception thrown = assertThrows(IllegalArgumentException.class, () -> Matrix.create(array, numRows, numCols));
+        Exception thrown = assertThrows(MatrixIllegalArgumentException.class, () -> Matrix.create(array, numRows, numCols));
 
         assertEquals(expected, thrown.getMessage());
     }
 
     @Test
-    public void testMatrixFactoryCreateNegativeNumCols() {
+    public void testMatrixFactoryCreateNonPositiveNumCols() {
         double[] array = new double[]{};
-        int numRows = 0;
+        int numRows = 1;
         int numCols = -1;
-        String expected = "'numCols' (-1) has to be a non negative integer";
+        String expected = "'numCols' (-1) has to be a positive integer";
 
-        Exception thrown = assertThrows(IllegalArgumentException.class, () -> Matrix.create(array, numRows, numCols));
+        Exception thrown = assertThrows(MatrixIllegalArgumentException.class, () -> Matrix.create(array, numRows, numCols));
 
         assertEquals(expected, thrown.getMessage());
     }
@@ -38,24 +38,24 @@ public class MatrixTest {
     @Test
     public void testMatrixFactoryCreateExceptionNull() {
         double[] array = null;
-        int numRows = 0;
-        int numCols = 0;
+        int numRows = 1;
+        int numCols = 1;
         String expected = "'array' cannot be null";
 
-        Exception thrown = assertThrows(NullPointerException.class, () -> Matrix.create(array, numRows, numCols));
+        Exception thrown = assertThrows(MatrixIllegalArgumentException.class, () -> Matrix.create(array, numRows, numCols));
 
         assertEquals(expected, thrown.getMessage());
     }
 
     @Test
     public void testMatrixFactoryCreateExceptionLengthTooLow() {
-        double[] array = new double[]{};
-        int numRows = 1;
-        int numCols = 1;
-        String expected = "Length of 'array' (0) does not match 'numRows' * 'numCols' (1)";
+        double[] array = new double[]{1, 2};
+        int numRows = 2;
+        int numCols = 2;
+        String expected = "Length of 'array' (2) does not match 'numRows' * 'numCols' (4)";
 
         Exception thrown = assertThrows(
-                IllegalArgumentException.class, () -> Matrix.create(array, numRows, numCols));
+                MatrixIllegalArgumentException.class, () -> Matrix.create(array, numRows, numCols));
 
         assertEquals(expected, thrown.getMessage());
     }
@@ -68,25 +68,9 @@ public class MatrixTest {
         String expected = "Length of 'array' (4) does not match 'numRows' * 'numCols' (1)";
 
         Exception thrown = assertThrows(
-                IllegalArgumentException.class, () -> Matrix.create(array, numRows, numCols));
+                MatrixIllegalArgumentException.class, () -> Matrix.create(array, numRows, numCols));
 
         assertEquals(expected, thrown.getMessage());
-    }
-
-    @Test
-    public void testMatrixFactoryCreateEmpty() {
-        double[] array = new double[]{};
-        int numRows = 0;
-        int numCols = 0;
-        double[] expectedArray = new double[]{};
-        int expectedNumRows = 0;
-        int expectedNumCols = 0;
-
-        Matrix matrix = Matrix.create(array, numRows, numCols);
-
-        assertArrayEquals(expectedArray, matrix.getArray(), 0.0);
-        assertEquals(expectedNumRows, matrix.getNumRows());
-        assertEquals(expectedNumCols, matrix.getNumCols());
     }
 
     @Test
@@ -138,23 +122,12 @@ public class MatrixTest {
     }
 
     @Test
-    public void testMatrixValidateRowIndexExceptionEmptyMatrix() {
-        Matrix matrix = Matrix.create(new double[]{}, 0, 0);
-        int i = 0;
-        String expected = "Row index 'i' = (0) cannot be used as matrix is empty";
-
-        Exception thrown = assertThrows(IllegalStateException.class, () -> matrix.validateRowIndex(i));
-
-        assertEquals(expected, thrown.getMessage());
-    }
-
-    @Test
     public void testMatrixValidateRowIndexExceptionTooBig() {
         Matrix matrix = Matrix.create(new double[]{0}, 1, 1);
         int i = 1;
         String expected = "Row index 'i' = (1) has to be between 0 and 0";
 
-        Exception thrown = assertThrows(IllegalArgumentException.class, () -> matrix.validateRowIndex(i));
+        Exception thrown = assertThrows(MatrixIllegalArgumentException.class, () -> matrix.validateRowIndex(i));
 
         assertEquals(expected, thrown.getMessage());
     }
@@ -165,7 +138,7 @@ public class MatrixTest {
         int i = -1;
         String expected = "Row index 'i' = (-1) has to be between 0 and 0";
 
-        Exception thrown = assertThrows(IllegalArgumentException.class, () -> matrix.validateRowIndex(i));
+        Exception thrown = assertThrows(MatrixIllegalArgumentException.class, () -> matrix.validateRowIndex(i));
 
         assertEquals(expected, thrown.getMessage());
     }
@@ -179,23 +152,12 @@ public class MatrixTest {
     }
 
     @Test
-    public void testMatrixValidateColIndexExceptionEmptyMatrix() {
-        Matrix matrix = Matrix.create(new double[]{}, 0, 0);
-        int j = 0;
-        String expected = "Col index 'j' = (0) cannot be used as matrix is empty";
-
-        Exception thrown = assertThrows(IllegalStateException.class, () -> matrix.validateColIndex(j));
-
-        assertEquals(expected, thrown.getMessage());
-    }
-
-    @Test
     public void testMatrixValidateColIndexExceptionTooBig() {
         Matrix matrix = Matrix.create(new double[]{0}, 1, 1);
         int j = 1;
         String expected = "Col index 'j' = (1) has to be between 0 and 0";
 
-        Exception thrown = assertThrows(IllegalArgumentException.class, () -> matrix.validateColIndex(j));
+        Exception thrown = assertThrows(MatrixIllegalArgumentException.class, () -> matrix.validateColIndex(j));
 
         assertEquals(expected, thrown.getMessage());
     }
@@ -206,7 +168,7 @@ public class MatrixTest {
         int j = -1;
         String expected = "Col index 'j' = (-1) has to be between 0 and 0";
 
-        Exception thrown = assertThrows(IllegalArgumentException.class, () -> matrix.validateColIndex(j));
+        Exception thrown = assertThrows(MatrixIllegalArgumentException.class, () -> matrix.validateColIndex(j));
 
         assertEquals(expected, thrown.getMessage());
     }
@@ -352,6 +314,292 @@ public class MatrixTest {
     }
 
     @Test
+    public void testMatrixValidateIndexExceptionNegative() {
+        Matrix matrix = Matrix.create(new double[]{0}, 1, 1);
+        int index = -1;
+        String expected = "'index' = (-1) has to be between 0 and 0";
+
+        Exception thrown = assertThrows(MatrixIllegalArgumentException.class, () -> matrix.validateIndex(index));
+
+        assertEquals(expected, thrown.getMessage());
+    }
+
+    @Test
+    public void testMatrixValidateIndexExceptionTooBig() {
+        Matrix matrix = Matrix.create(new double[]{0}, 1, 1);
+        int index = 1;
+        String expected = "'index' = (1) has to be between 0 and 0";
+
+        Exception thrown = assertThrows(MatrixIllegalArgumentException.class, () -> matrix.validateIndex(index));
+
+        assertEquals(expected, thrown.getMessage());
+    }
+
+    @Test
+    public void testMatrixGetRowIndex1() {
+        Matrix matrix = Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 2, 3);
+        int index = 0;
+        int expected = 0;
+
+        int rowIndex = matrix.getRowIndex(index);
+
+        assertEquals(expected, rowIndex);
+    }
+
+    @Test
+    public void testMatrixGetRowIndex2() {
+        Matrix matrix = Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 2, 3);
+        int index = 1;
+        int expected = 0;
+
+        int rowIndex = matrix.getRowIndex(index);
+
+        assertEquals(expected, rowIndex);
+    }
+
+    @Test
+    public void testMatrixGetRowIndex3() {
+        Matrix matrix = Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 2, 3);
+        int index = 2;
+        int expected = 0;
+
+        int rowIndex = matrix.getRowIndex(index);
+
+        assertEquals(expected, rowIndex);
+    }
+
+    @Test
+    public void testMatrixGetRowIndex4() {
+        Matrix matrix = Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 2, 3);
+        int index = 3;
+        int expected = 1;
+
+        int rowIndex = matrix.getRowIndex(index);
+
+        assertEquals(expected, rowIndex);
+    }
+
+    @Test
+    public void testMatrixGetRowIndex5() {
+        Matrix matrix = Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 2, 3);
+        int index = 4;
+        int expected = 1;
+
+        int rowIndex = matrix.getRowIndex(index);
+
+        assertEquals(expected, rowIndex);
+    }
+
+    @Test
+    public void testMatrixGetRowIndex6() {
+        Matrix matrix = Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 2, 3);
+        int index = 5;
+        int expected = 1;
+
+        int rowIndex = matrix.getRowIndex(index);
+
+        assertEquals(expected, rowIndex);
+    }
+
+    @Test
+    public void testMatrixGetRowIndex7() {
+        Matrix matrix = Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 3, 2);
+        int index = 0;
+        int expected = 0;
+
+        int rowIndex = matrix.getRowIndex(index);
+
+        assertEquals(expected, rowIndex);
+    }
+
+    @Test
+    public void testMatrixGetRowIndex8() {
+        Matrix matrix = Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 3, 2);
+        int index = 1;
+        int expected = 0;
+
+        int rowIndex = matrix.getRowIndex(index);
+
+        assertEquals(expected, rowIndex);
+    }
+
+    @Test
+    public void testMatrixGetRowIndex9() {
+        Matrix matrix = Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 3, 2);
+        int index = 2;
+        int expected = 1;
+
+        int rowIndex = matrix.getRowIndex(index);
+
+        assertEquals(expected, rowIndex);
+    }
+
+    @Test
+    public void testMatrixGetRowIndex10() {
+        Matrix matrix = Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 3, 2);
+        int index = 3;
+        int expected = 1;
+
+        int rowIndex = matrix.getRowIndex(index);
+
+        assertEquals(expected, rowIndex);
+    }
+
+    @Test
+    public void testMatrixGetRowIndex11() {
+        Matrix matrix = Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 3, 2);
+        int index = 4;
+        int expected = 2;
+
+        int rowIndex = matrix.getRowIndex(index);
+
+        assertEquals(expected, rowIndex);
+    }
+
+    @Test
+    public void testMatrixGetRowIndex12() {
+        Matrix matrix = Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 3, 2);
+        int index = 5;
+        int expected = 2;
+
+        int rowIndex = matrix.getRowIndex(index);
+
+        assertEquals(expected, rowIndex);
+    }
+
+    @Test
+    public void testMatrixGetColIndex1() {
+        Matrix matrix = Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 2, 3);
+        int index = 0;
+        int expected = 0;
+
+        int colIndex = matrix.getColIndex(index);
+
+        assertEquals(expected, colIndex);
+    }
+
+    @Test
+    public void testMatrixGetColIndex2() {
+        Matrix matrix = Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 2, 3);
+        int index = 1;
+        int expected = 1;
+
+        int colIndex = matrix.getColIndex(index);
+
+        assertEquals(expected, colIndex);
+    }
+
+    @Test
+    public void testMatrixGetColIndex3() {
+        Matrix matrix = Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 2, 3);
+        int index = 2;
+        int expected = 2;
+
+        int colIndex = matrix.getColIndex(index);
+
+        assertEquals(expected, colIndex);
+    }
+
+    @Test
+    public void testMatrixGetColIndex4() {
+        Matrix matrix = Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 2, 3);
+        int index = 3;
+        int expected = 0;
+
+        int colIndex = matrix.getColIndex(index);
+
+        assertEquals(expected, colIndex);
+    }
+
+    @Test
+    public void testMatrixGetColIndex5() {
+        Matrix matrix = Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 2, 3);
+        int index = 4;
+        int expected = 1;
+
+        int colIndex = matrix.getColIndex(index);
+
+        assertEquals(expected, colIndex);
+    }
+
+    @Test
+    public void testMatrixGetColIndex6() {
+        Matrix matrix = Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 2, 3);
+        int index = 5;
+        int expected = 2;
+
+        int colIndex = matrix.getColIndex(index);
+
+        assertEquals(expected, colIndex);
+    }
+
+    @Test
+    public void testMatrixGetColIndex7() {
+        Matrix matrix = Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 3, 2);
+        int index = 0;
+        int expected = 0;
+
+        int colIndex = matrix.getRowIndex(index);
+
+        assertEquals(expected, colIndex);
+    }
+
+    @Test
+    public void testMatrixGetColIndex8() {
+        Matrix matrix = Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 3, 2);
+        int index = 1;
+        int expected = 1;
+
+        int colIndex = matrix.getColIndex(index);
+
+        assertEquals(expected, colIndex);
+    }
+
+    @Test
+    public void testMatrixGetColIndex9() {
+        Matrix matrix = Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 3, 2);
+        int index = 2;
+        int expected = 0;
+
+        int colIndex = matrix.getColIndex(index);
+
+        assertEquals(expected, colIndex);
+    }
+
+    @Test
+    public void testMatrixGetColIndex10() {
+        Matrix matrix = Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 3, 2);
+        int index = 3;
+        int expected = 1;
+
+        int colIndex = matrix.getColIndex(index);
+
+        assertEquals(expected, colIndex);
+    }
+
+    @Test
+    public void testMatrixGetColIndex11() {
+        Matrix matrix = Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 3, 2);
+        int index = 4;
+        int expected = 0;
+
+        int colIndex = matrix.getColIndex(index);
+
+        assertEquals(expected, colIndex);
+    }
+
+    @Test
+    public void testMatrixGetColIndex12() {
+        Matrix matrix = Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 3, 2);
+        int index = 5;
+        int expected = 1;
+
+        int colIndex = matrix.getColIndex(index);
+
+        assertEquals(expected, colIndex);
+    }
+
+    @Test
     public void testMatrixGetRow1() {
         Matrix matrix = Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 2, 3);
         int i = 0;
@@ -463,7 +711,7 @@ public class MatrixTest {
 
     @Test
     public void testMatrixEquals1() {
-        Matrix matrix = Matrix.create(new double[]{}, 0, 0);
+        Matrix matrix = Matrix.create(new double[]{0}, 1, 1);
         Matrix objectToCompare = null;
         boolean expected = false;
 
@@ -474,8 +722,8 @@ public class MatrixTest {
 
     @Test
     public void testMatrixEquals2() {
-        Matrix matrix = Matrix.create(new double[]{}, 0, 0);
-        Matrix objectToCompare = Matrix.create(new double[]{}, 0, 0);
+        Matrix matrix = Matrix.create(new double[]{0}, 1, 1);
+        Matrix objectToCompare = Matrix.create(new double[]{0}, 1, 1);
         boolean expected = true;
 
         boolean equals = matrix.equals(objectToCompare);
@@ -485,7 +733,7 @@ public class MatrixTest {
 
     @Test
     public void testMatrixEquals3() {
-        Matrix matrix = Matrix.create(new double[]{}, 0, 0);
+        Matrix matrix = Matrix.create(new double[]{0}, 1, 1);
         Matrix objectToCompare = matrix;
         boolean expected = true;
 
@@ -496,7 +744,7 @@ public class MatrixTest {
 
     @Test
     public void testMatrixEquals4() {
-        Matrix matrix = Matrix.create(new double[]{}, 0, 0);
+        Matrix matrix = Matrix.create(new double[]{0}, 1, 1);
         Matrix objectToCompare = Matrix.create(new double[]{1}, 1, 1);
         boolean expected = false;
 
@@ -551,8 +799,8 @@ public class MatrixTest {
 
     @Test
     public void testMatrixHashCode1() {
-        Matrix matrix = Matrix.create(new double[]{}, 0, 0);
-        int expected = 29792;
+        Matrix matrix = Matrix.create(new double[]{0}, 1, 1);
+        int expected = 30814;
 
         int hashCode = matrix.hashCode();
 
@@ -561,8 +809,8 @@ public class MatrixTest {
 
     @Test
     public void testMatrixHashCode2() {
-        Matrix matrix = Matrix.create(new double[]{}, 0, 0);
-        int expected = 29792;
+        Matrix matrix = Matrix.create(new double[]{0}, 1, 1);
+        int expected = 30814;
 
         int hashCode = matrix.hashCode();
 
@@ -591,16 +839,6 @@ public class MatrixTest {
 
     @Test
     public void testMatrixToString1() {
-        Matrix matrix = Matrix.create(new double[]{}, 0, 0);
-        String expected = "Matrix{}";
-
-        String string = matrix.toString();
-
-        assertEquals(expected, string);
-    }
-
-    @Test
-    public void testMatrixToString2() {
         Matrix matrix = Matrix.create(new double[]{0}, 1, 1);
         String expected = "Matrix{0.0000e+00}";
 
@@ -610,7 +848,7 @@ public class MatrixTest {
     }
 
     @Test
-    public void testMatrixToString3() {
+    public void testMatrixToString2() {
         Matrix matrix = Matrix.create(new double[]{1, 2, 3, 4}, 2, 2);
         String expected = "Matrix{1.0000e+00 2.0000e+00\n       3.0000e+00 4.0000e+00}";
 
@@ -644,7 +882,7 @@ public class MatrixTest {
         double[][] nestedArray = null;
         String expected = "'nestedArray' cannot be null";
 
-        Exception thrown = assertThrows(NullPointerException.class, () -> Matrix.from(nestedArray));
+        Exception thrown = assertThrows(MatrixIllegalArgumentException.class, () -> Matrix.from(nestedArray));
 
         assertEquals(expected, thrown.getMessage());
     }
@@ -654,7 +892,7 @@ public class MatrixTest {
         double[][] nestedArray = {null};
         String expected = "'nestedArray[0]' cannot be null";
 
-        Exception thrown = assertThrows(NullPointerException.class, () -> Matrix.from(nestedArray));
+        Exception thrown = assertThrows(MatrixIllegalArgumentException.class, () -> Matrix.from(nestedArray));
 
         assertEquals(expected, thrown.getMessage());
     }
@@ -665,7 +903,7 @@ public class MatrixTest {
         double[][] nestedArray = {{0}, array};
         String expected = "'nestedArray[1]' cannot be null";
 
-        Exception thrown = assertThrows(NullPointerException.class, () -> Matrix.from(nestedArray));
+        Exception thrown = assertThrows(MatrixIllegalArgumentException.class, () -> Matrix.from(nestedArray));
 
         assertEquals(expected, thrown.getMessage());
     }
@@ -675,7 +913,7 @@ public class MatrixTest {
         double[][] nestedArray = {{0}, {}};
         String expected = "Inconsistent number of rows for 'nestedArray'";
 
-        Exception thrown = assertThrows(IllegalArgumentException.class, () -> Matrix.from(nestedArray));
+        Exception thrown = assertThrows(MatrixIllegalArgumentException.class, () -> Matrix.from(nestedArray));
 
         assertEquals(expected, thrown.getMessage());
     }
@@ -685,17 +923,17 @@ public class MatrixTest {
         double[][] nestedArray = {{0}, {1, 2}};
         String expected = "Inconsistent number of rows for 'nestedArray'";
 
-        Exception thrown = assertThrows(IllegalArgumentException.class, () -> Matrix.from(nestedArray));
+        Exception thrown = assertThrows(MatrixIllegalArgumentException.class, () -> Matrix.from(nestedArray));
 
         assertEquals(expected, thrown.getMessage());
     }
 
     @Test
     public void testMatrixFactoryFromNestedArrayExceptionInconsistentNumRows3() {
-        double[][] nestedArray = {{}, {0}};
+        double[][] nestedArray = {{0}, {}};
         String expected = "Inconsistent number of rows for 'nestedArray'";
 
-        Exception thrown = assertThrows(IllegalArgumentException.class, () -> Matrix.from(nestedArray));
+        Exception thrown = assertThrows(MatrixIllegalArgumentException.class, () -> Matrix.from(nestedArray));
 
         assertEquals(expected, thrown.getMessage());
     }
@@ -705,64 +943,74 @@ public class MatrixTest {
         double[][] nestedArray = {{1, 2}, {0}};
         String expected = "Inconsistent number of rows for 'nestedArray'";
 
-        Exception thrown = assertThrows(IllegalArgumentException.class, () -> Matrix.from(nestedArray));
+        Exception thrown = assertThrows(MatrixIllegalArgumentException.class, () -> Matrix.from(nestedArray));
 
         assertEquals(expected, thrown.getMessage());
     }
 
     @Test
-    public void testMatrixFactoryFromNestedArrayEmpty() {
-        double[][] array = new double[][]{{}};
-        double[] expected = new double[]{};
+    public void testMatrixFactoryFromNestedArrayExceptionEmpty1() {
+        double[][] nestedArray = new double[][]{};
+        String expected = "'nestedArray' cannot be empty";
 
-        Matrix matrix = Matrix.from(array);
+        Exception thrown = assertThrows(MatrixIllegalArgumentException.class, () -> Matrix.from(nestedArray));
 
-        assertArrayEquals(expected, matrix.getArray(), 0.0);
+        assertEquals(expected, thrown.getMessage());
+    }
+
+    @Test
+    public void testMatrixFactoryFromNestedArrayExceptionEmpty2() {
+        double[][] nestedArray = new double[][]{{}};
+        String expected = "'nestedArray' cannot be empty";
+
+        Exception thrown = assertThrows(MatrixIllegalArgumentException.class, () -> Matrix.from(nestedArray));
+
+        assertEquals(expected, thrown.getMessage());
     }
 
     @Test
     public void testMatrixFactoryFromNestedArraySimple1() {
-        double[][] array = new double[][]{{1, 2}, {3, 4}};
+        double[][] nestedArray = new double[][]{{1, 2}, {3, 4}};
         Matrix expected = Matrix.create(new double[]{1, 2, 3, 4}, 2, 2);
 
-        Matrix matrix = Matrix.from(array);
+        Matrix matrix = Matrix.from(nestedArray);
 
         assertEquals(expected, matrix);
     }
 
     @Test
     public void testMatrixFactoryFromNestedArraySimple2() {
-        double[][] array = new double[][]{{1, 3}, {2, 4}};
+        double[][] nestedArray = new double[][]{{1, 3}, {2, 4}};
         Matrix expected = Matrix.create(new double[]{1, 3, 2, 4}, 2, 2);
 
-        Matrix matrix = Matrix.from(array);
+        Matrix matrix = Matrix.from(nestedArray);
 
         assertEquals(expected, matrix);
     }
 
     @Test
     public void testMatrixFactoryFromNestedArraySimple3() {
-        double[][] array = new double[][]{{1, 2, 3}, {4, 5, 6}};
+        double[][] nestedArray = new double[][]{{1, 2, 3}, {4, 5, 6}};
         Matrix expected = Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 2, 3);
 
-        Matrix matrix = Matrix.from(array);
+        Matrix matrix = Matrix.from(nestedArray);
 
         assertEquals(expected, matrix);
     }
 
     @Test
     public void testMatrixFactoryFromNestedArraySimple4() {
-        double[][] array = new double[][]{{1, 2}, {3, 4}, {5, 6}};
+        double[][] nestedArray = new double[][]{{1, 2}, {3, 4}, {5, 6}};
         Matrix expected = Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 3, 2);
 
-        Matrix matrix = Matrix.from(array);
+        Matrix matrix = Matrix.from(nestedArray);
 
         assertEquals(expected, matrix);
     }
 
     @Test
     public void testMatrixCopy() {
-        Matrix matrix = Matrix.create(new double[]{}, 0 ,0);
+        Matrix matrix = Matrix.create(new double[]{0}, 1 ,1);
 
         Matrix copiedMatrix = matrix.copy();
 
@@ -827,9 +1075,9 @@ public class MatrixTest {
         double element = 1;
         int numRows = -1;
         int numCols = 0;
-        String expected = "'numRows' (-1) has to be a non negative integer";
+        String expected = "'numRows' (-1) has to be a positive integer";
 
-        Exception thrown = assertThrows(IllegalArgumentException.class, () -> Matrix.of(element, numRows, numCols));
+        Exception thrown = assertThrows(MatrixIllegalArgumentException.class, () -> Matrix.of(element, numRows, numCols));
 
         assertEquals(expected, thrown.getMessage());
     }
@@ -837,11 +1085,11 @@ public class MatrixTest {
     @Test
     public void testMatrixFactoryOfNegativeNumCols() {
         double element = 1;
-        int numRows = 0;
+        int numRows = 1;
         int numCols = -1;
-        String expected = "'numCols' (-1) has to be a non negative integer";
+        String expected = "'numCols' (-1) has to be a positive integer";
 
-        Exception thrown = assertThrows(IllegalArgumentException.class, () -> Matrix.of(element, numRows, numCols));
+        Exception thrown = assertThrows(MatrixIllegalArgumentException.class, () -> Matrix.of(element, numRows, numCols));
 
         assertEquals(expected, thrown.getMessage());
     }
@@ -849,9 +1097,9 @@ public class MatrixTest {
     @Test
     public void testMatrixFactoryOf1() {
         double element = 0;
-        int numRows = 0;
-        int numCols = 0;
-        Matrix expected = Matrix.create(new double[]{}, 0, 0);
+        int numRows = 1;
+        int numCols = 1;
+        Matrix expected = Matrix.create(new double[]{0}, 1, 1);
 
         Matrix matrix = Matrix.of(element, numRows, numCols);
 
@@ -1064,6 +1312,28 @@ public class MatrixTest {
 
         assertEquals(Matrix.class, matrix.getClass());
     }
+
+//    @Test
+//    public void testMatrixAddExceptionDimensionMismatch() {
+//        Matrix matrix = Matrix.create(new double[]{1, 1, 1, 1, 1, 1}, 2, 3);
+//        Matrix other = Matrix.create(new double[]{1, 1, 1, 1, 1, 1}, 3, 2);
+//        String expected = "Dimension mismatch, numRows: 2 vs 3 and numCols: 3 vs 2";
+//
+//        Exception thrown = assertThrows(MatrixIllegalArgumentException.class, () -> matrix.add(other));
+//
+//        assertEquals(expected, thrown.getMessage());
+//    }
+//
+//    @Test
+//    public void testMatrixAdd1() {
+//        Matrix matrix = Matrix.create(new double[]{1, 1, 1, 1, 1, 1}, 2, 3);
+//        Matrix other = Matrix.create(new double[]{1, 1, 1, 1, 1, 1}, 2, 3);
+//        Matrix expected = Matrix.create(new double[]{2, 2, 2, 2, 2, 2}, 2, 3);
+//
+//        Matrix actual = matrix.add(other);
+//
+//        assertEquals(expected, actual);
+//    }
 
 }
 
