@@ -16,10 +16,6 @@ repositories {
     mavenCentral()
 }
 
-//test {
-//    useJUnitPlatform()
-//}
-
 dependencies {
 
     // Use JUnit test framework.
