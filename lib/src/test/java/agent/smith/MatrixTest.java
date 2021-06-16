@@ -1007,5 +1007,175 @@ public class MatrixTest {
         assertArrayEquals(expected, col, 0.0);
     }
 
+    // -----------------------------------------------------------------------------------------------------------------
+    // add (matrix with matrix)
+    @SuppressWarnings("unused")
+    static Stream<Arguments> addMatrixMatrixExceptionArguments = Stream.of(
+            // left == null
+            Arguments.of(
+                    null,
+                    Matrix.create(new double[]{0}, 1, 1),
+                    Matrix.create(new double[]{0}, 1, 1),
+                    "Matrices to be added cannot be null")
+            // right == null
+            , Arguments.of(
+                    Matrix.create(new double[]{0}, 1, 1),
+                    null,
+                    Matrix.create(new double[]{0}, 1, 1),
+                    "Matrices to be added cannot be null")
+            // left.numRows != right.numRows
+            , Arguments.of(
+                    Matrix.create(new double[]{0}, 1, 1),
+                    Matrix.create(new double[]{1, 2}, 2, 1),
+                    Matrix.create(new double[]{0}, 1, 1),
+                    "Dimension mismatch (left vs right), 'numRows': 1 vs 2 and 'numCols': 1 vs 1")
+            , Arguments.of(
+                    Matrix.create(new double[]{0}, 1, 1),
+                    Matrix.create(new double[]{1, 2}, 1, 2),
+                    Matrix.create(new double[]{0}, 1, 1),
+                    "Dimension mismatch (left vs right), 'numRows': 1 vs 1 and 'numCols': 1 vs 2")
+            , Arguments.of(
+                    Matrix.create(new double[]{0}, 1, 1),
+                    Matrix.create(new double[]{1, 2, 3, 4}, 2, 2),
+                    Matrix.create(new double[]{0}, 1, 1),
+                    "Dimension mismatch (left vs right), 'numRows': 1 vs 2 and 'numCols': 1 vs 2")
+            // left.numRows != result.numRows
+            , Arguments.of(
+                    Matrix.create(new double[]{0}, 1, 1),
+                    Matrix.create(new double[]{0}, 1, 1),
+                    Matrix.create(new double[]{1, 2}, 2, 1),
+                    "Dimension mismatch (left vs result), 'numRows': 1 vs 2 and 'numCols': 1 vs 1")
+            , Arguments.of(
+                    Matrix.create(new double[]{0}, 1, 1),
+                    Matrix.create(new double[]{0}, 1, 1),
+                    Matrix.create(new double[]{1, 2}, 1, 2),
+                    "Dimension mismatch (left vs result), 'numRows': 1 vs 1 and 'numCols': 1 vs 2")
+            , Arguments.of(
+                    Matrix.create(new double[]{0}, 1, 1),
+                    Matrix.create(new double[]{0}, 1, 1),
+                    Matrix.create(new double[]{1, 2, 3, 4}, 2, 2),
+                    "Dimension mismatch (left vs result), 'numRows': 1 vs 2 and 'numCols': 1 vs 2")
+    );
+    @ParameterizedTest
+    @VariableSource("addMatrixMatrixExceptionArguments")
+    public void testAddMatrixMatrixException(Matrix left, Matrix right, Matrix result, String expected) {
+        Exception thrown = assertThrows(MatrixIllegalArgumentException.class,
+                () -> Matrix.add(left, right, result));
+        assertEquals(expected, thrown.getMessage());
+    }
+
+    @SuppressWarnings("unused")
+    static Stream<Arguments> addMatrixMatrixArguments = Stream.of(
+              Arguments.of(
+                    Matrix.create(new double[]{1}, 1, 1),
+                    Matrix.create(new double[]{2}, 1, 1),
+                    Matrix.create(new double[]{Double.NaN}, 1, 1),
+                    Matrix.create(new double[]{3}, 1, 1))
+            , Arguments.of(
+                    Matrix.create(new double[]{2}, 1, 1),
+                    Matrix.create(new double[]{1}, 1, 1),
+                    Matrix.create(new double[]{Double.NaN}, 1, 1),
+                    Matrix.create(new double[]{3}, 1, 1))
+            , Arguments.of(
+                    Matrix.create(new double[]{1, 2, 3, 4}, 2, 2),
+                    Matrix.create(new double[]{5, 6, 7, 8}, 2, 2),
+                    Matrix.create(new double[]{Double.NaN, Double.NaN, Double.NaN, Double.NaN}, 2, 2),
+                    Matrix.create(new double[]{6, 8, 10, 12}, 2, 2))
+            , Arguments.of(
+                    Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 2, 3),
+                    Matrix.create(new double[]{5, 6, 7, 8, 9, 10}, 2, 3),
+                    Matrix.create(new double[]{Double.NaN, Double.NaN, Double.NaN, Double.NaN, Double.NaN, Double.NaN},
+                            2, 3),
+                    Matrix.create(new double[]{6, 8, 10, 12, 14, 16}, 2, 3))
+            , Arguments.of(
+                    Matrix.create(new double[]{1}, 1, 1),
+                    Matrix.create(new double[]{2}, 1, 1),
+                    null,
+                    Matrix.create(new double[]{3}, 1, 1))
+    );
+    @ParameterizedTest
+    @VariableSource("addMatrixMatrixArguments")
+    public void testAddMatrixMatrix(Matrix left, Matrix right, Matrix result, Matrix expected) {
+        Matrix actual = Matrix.add(left, right, result);
+        if (result != null) {
+            assertSame(actual, result);
+        }
+        assertEquals(expected, actual);
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+    // add (matrix with double)
+    @SuppressWarnings("unused")
+    static Stream<Arguments> addMatrixDoubleExceptionArguments = Stream.of(
+            // left == null
+            Arguments.of(
+                    null,
+                    0,
+                    Matrix.create(new double[]{0}, 1, 1),
+                    "Matrix to be added cannot be null")
+            // left.numRows != result.numRows
+            , Arguments.of(
+                    Matrix.create(new double[]{0}, 1, 1),
+                    0,
+                    Matrix.create(new double[]{1, 2}, 2, 1),
+                    "Dimension mismatch (left vs result), 'numRows': 1 vs 2 and 'numCols': 1 vs 1")
+            , Arguments.of(
+                    Matrix.create(new double[]{0}, 1, 1),
+                    0,
+                    Matrix.create(new double[]{1, 2}, 1, 2),
+                    "Dimension mismatch (left vs result), 'numRows': 1 vs 1 and 'numCols': 1 vs 2")
+            , Arguments.of(
+                    Matrix.create(new double[]{0}, 1, 1),
+                    0,
+                    Matrix.create(new double[]{1, 2, 3, 4}, 2, 2),
+                    "Dimension mismatch (left vs result), 'numRows': 1 vs 2 and 'numCols': 1 vs 2")
+    );
+    @ParameterizedTest
+    @VariableSource("addMatrixDoubleExceptionArguments")
+    public void testAddMatrixDoubleException(Matrix left, double right, Matrix result, String expected) {
+        Exception thrown = assertThrows(MatrixIllegalArgumentException.class,
+                () -> Matrix.add(left, right, result));
+        assertEquals(expected, thrown.getMessage());
+    }
+
+    @SuppressWarnings("unused")
+    static Stream<Arguments> addMatrixDoubleArguments = Stream.of(
+            Arguments.of(
+                    Matrix.create(new double[]{1}, 1, 1),
+                    2,
+                    Matrix.create(new double[]{Double.NaN}, 1, 1),
+                    Matrix.create(new double[]{3}, 1, 1))
+            , Arguments.of(
+                    Matrix.create(new double[]{2}, 1, 1),
+                    1,
+                    Matrix.create(new double[]{Double.NaN}, 1, 1),
+                    Matrix.create(new double[]{3}, 1, 1))
+            , Arguments.of(
+                    Matrix.create(new double[]{1, 2, 3, 4}, 2, 2),
+                    1,
+                    Matrix.create(new double[]{Double.NaN, Double.NaN, Double.NaN, Double.NaN}, 2, 2),
+                    Matrix.create(new double[]{2, 3, 4, 5}, 2, 2))
+            , Arguments.of(
+                    Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 2, 3),
+                    2,
+                    Matrix.create(new double[]{Double.NaN, Double.NaN, Double.NaN, Double.NaN, Double.NaN, Double.NaN},
+                            2, 3),
+                    Matrix.create(new double[]{3, 4, 5, 6, 7, 8}, 2, 3))
+            , Arguments.of(
+                    Matrix.create(new double[]{1}, 1, 1),
+                    2,
+                    null,
+                    Matrix.create(new double[]{3}, 1, 1))
+    );
+    @ParameterizedTest
+    @VariableSource("addMatrixDoubleArguments")
+    public void testAddMatrixDouble(Matrix left, double right, Matrix result, Matrix expected) {
+        Matrix actual = Matrix.add(left, right, result);
+        if (result != null) {
+            assertSame(actual, result);
+        }
+        assertEquals(expected, actual);
+    }
+
 }
 

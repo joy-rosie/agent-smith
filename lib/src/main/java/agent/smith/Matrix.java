@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.lang.Math;
 import java.util.Random;
-//import java.util.stream.IntStream;
+import java.util.stream.IntStream;
 
 public class Matrix {
 
@@ -18,16 +18,16 @@ public class Matrix {
     private final int length;
 
     private void validateNumRows() throws MatrixIllegalArgumentException {
-        if (numRows <= 0) {
+        if (this.numRows <= 0) {
             throw new MatrixIllegalArgumentException(
-                    String.format("'numRows' (%d) has to be a positive integer", numRows));
+                    String.format("'numRows' (%d) has to be a positive integer", this.numRows));
         }
     }
 
     private void validateNumCols() throws MatrixIllegalArgumentException {
-        if (numCols <= 0) {
+        if (this.numCols <= 0) {
             throw new MatrixIllegalArgumentException(
-                    String.format("'numCols' (%d) has to be a positive integer", numCols));
+                    String.format("'numCols' (%d) has to be a positive integer", this.numCols));
         }
     }
 
@@ -152,21 +152,22 @@ public class Matrix {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Matrix matrix = (Matrix) o;
-        return numRows == matrix.numRows && numCols == matrix.numCols && Arrays.equals(array, matrix.array);
+        return this.numRows == matrix.numRows && this.numCols == matrix.numCols &&
+                Arrays.equals(this.array, matrix.array);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(numRows, numCols);
-        result = 31 * result + Arrays.hashCode(array);
+        int result = Objects.hash(this.numRows, this.numCols);
+        result = 31 * result + Arrays.hashCode(this.array);
         return result;
     }
 
     public String toString(String format, String rowDelimiter, String colDelimiter) {
-        String[] string = new String[numRows];
-        for (int rowIndex = 0; rowIndex < numRows; rowIndex++) {
-            String[] row = new String[numCols];
-            for (int colIndex = 0; colIndex < numCols; colIndex++) {
+        String[] string = new String[this.numRows];
+        for (int rowIndex = 0; rowIndex < this.numRows; rowIndex++) {
+            String[] row = new String[this.numCols];
+            for (int colIndex = 0; colIndex < this.numCols; colIndex++) {
                 row[colIndex] = String.format(format,  array[getIndex(rowIndex, colIndex)]);
             }
             string[rowIndex] = String.join(colDelimiter, row);
@@ -224,12 +225,12 @@ public class Matrix {
 
     int getRowIndex(int index) throws MatrixIllegalArgumentException {
         validateIndex(index);
-        return index / numCols;
+        return index / this.numCols;
     }
 
     int getColIndex(int index) throws MatrixIllegalArgumentException {
         validateIndex(index);
-        return index % numCols;
+        return index % this.numCols;
     }
 
     public double get(int rowIndex, int colIndex) throws MatrixIllegalArgumentException {
@@ -241,8 +242,8 @@ public class Matrix {
     }
 
     public void setDiagonal(double value) {
-        for (int index = 0, n = Math.min(numRows, numCols); index < n; index++) {
-            set(index, index, value);
+        for (int index = 0, n = Math.min(this.numRows, this.numCols); index < n; index++) {
+            this.set(index, index, value);
         }
     }
 
@@ -258,10 +259,8 @@ public class Matrix {
 
     public static Matrix instanceOfRandom(Random r, int numRows, int numCols) {
         Matrix matrix = Matrix.ofZeros(numRows, numCols);
-        for (int rowIndex = 0; rowIndex < matrix.numRows; rowIndex++) {
-            for (int colIndex = 0; colIndex < matrix.numCols; colIndex++) {
-                matrix.set(rowIndex, colIndex, r.nextGaussian());
-            }
+        for (int index = 0; index < matrix.length; index++) {
+            matrix.array[index] = r.nextGaussian();
         }
         return matrix;
     }
@@ -290,32 +289,93 @@ public class Matrix {
 
     public double[] getRow(int rowIndex) throws MatrixIllegalArgumentException {
         int index = getIndex(rowIndex, 0);
-        return Arrays.copyOfRange(array, index, index + numCols);
+        return Arrays.copyOfRange(this.array, index, index + this.numCols);
     }
 
     public double[] getCol(int colIndex) throws MatrixIllegalArgumentException {
-        double[] col = new double[numRows];
-        for (int rowIndex = 0; rowIndex < numRows; rowIndex++) {
-            col[rowIndex] = array[getIndex(rowIndex, colIndex)];
+        double[] col = new double[this.numRows];
+        for (int rowIndex = 0; rowIndex < this.numRows; rowIndex++) {
+            col[rowIndex] = this.array[getIndex(rowIndex, colIndex)];
         }
         return col;
     }
 
     public Matrix copy() {
-        return create(array, numRows, numCols);
+        return create(this.array, this.numRows, this.numCols);
     }
 
-//    public static Matrix add(Matrix A, Matrix B) {
-//        if (numRows != other.numRows || numCols != other.numCols) {
-//            throw new MatrixIllegalArgumentException(String.format(
-//                    "Dimension mismatch, numRows: %d vs %d and numCols: %d vs %d",
-//                    numRows, other.numRows, numCols, other.numCols));
-//        }
-//        Matrix matrix = Matrix.create(numRows, numCols);
-//        for (int index = 0; index < matrix.length; index++) {
-//            matrix.array[index] = array[index] + other.array[index];
-//        }
-//        return matrix;
-//    }
+    static Matrix add(Matrix left, Matrix right, Matrix result) throws MatrixIllegalArgumentException {
+
+        if (left == null || right == null) {
+            throw new MatrixIllegalArgumentException("Matrices to be added cannot be null");
+        }
+
+        if (left.numRows != right.numRows || left.numCols != right.numCols) {
+            throw new MatrixIllegalArgumentException(String.format(
+                    "Dimension mismatch (left vs right), 'numRows': %d vs %d and 'numCols': %d vs %d",
+                    left.numRows, right.numRows, left.numCols, right.numCols));
+        }
+
+        if (result == null) {
+            result = Matrix.create(left.numRows, left.numCols);
+        }
+
+        if (left.numRows != result.numRows || left.numCols != result.numCols) {
+            throw new MatrixIllegalArgumentException(String.format(
+                    "Dimension mismatch (left vs result), 'numRows': %d vs %d and 'numCols': %d vs %d",
+                    left.numRows, result.numRows, left.numCols, result.numCols));
+        }
+
+        for (int index = 0; index < result.length; index++) {
+            result.array[index] = left.array[index] + right.array[index];
+        }
+
+        return result;
+
+    }
+
+    public Matrix add(Matrix other) throws MatrixIllegalArgumentException {
+        return Matrix.add(this, other, this);
+    }
+
+    public static Matrix add(Matrix left, Matrix right) throws MatrixIllegalArgumentException {
+        return Matrix.add(left, right, null);
+    }
+
+    static Matrix add(Matrix left, double right, Matrix result) throws MatrixIllegalArgumentException {
+
+        if (left == null) {
+            throw new MatrixIllegalArgumentException("Matrix to be added cannot be null");
+        }
+
+        if (result == null) {
+            result = Matrix.create(left.numRows, left.numCols);
+        }
+
+        if (left.numRows != result.numRows || left.numCols != result.numCols) {
+            throw new MatrixIllegalArgumentException(String.format(
+                    "Dimension mismatch (left vs result), 'numRows': %d vs %d and 'numCols': %d vs %d",
+                    left.numRows, result.numRows, left.numCols, result.numCols));
+        }
+
+        for (int index = 0; index < result.length; index++) {
+            result.array[index] = left.array[index] + right;
+        }
+
+        return result;
+
+    }
+
+    public Matrix add(double other) throws MatrixIllegalArgumentException {
+        return Matrix.add(this, other, this);
+    }
+
+    public static Matrix add(Matrix left, double right) throws MatrixIllegalArgumentException {
+        return Matrix.add(left, right, null);
+    }
+
+    public static Matrix add(double left, Matrix right) throws MatrixIllegalArgumentException {
+        return Matrix.add(right, left, null);
+    }
 
 }
