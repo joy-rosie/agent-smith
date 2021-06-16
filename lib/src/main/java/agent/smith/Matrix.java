@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.lang.Math;
 import java.util.Random;
+//import java.util.stream.IntStream;
 
 public class Matrix {
 
@@ -39,12 +40,12 @@ public class Matrix {
 
         this.numRows = numRows;
         this.numCols = numCols;
-        length = this.numRows * this.numCols;
+        this.length = this.numRows * this.numCols;
 
         validateNumRowsNumCols();
 
-        array = new double[length];
-        Arrays.fill(array, value);
+        this.array = new double[length];
+        Arrays.fill(this.array, value);
     }
 
     public static Matrix of(double element, int numRows, int numCols) {
@@ -77,23 +78,23 @@ public class Matrix {
     }
 
     public static Matrix create(int numRows, int numCols) {
-        return of(Double.NaN, numRows, numCols);
+        return Matrix.of(Double.NaN, numRows, numCols);
     }
 
     public static Matrix ofZeros(int numRows, int numCols) {
-        return of(0, numRows, numCols);
+        return Matrix.of(0, numRows, numCols);
     }
 
     public static Matrix ofZeros(int numRowsAndCols) {
-        return ofZeros(numRowsAndCols, numRowsAndCols);
+        return Matrix.ofZeros(numRowsAndCols, numRowsAndCols);
     }
 
     public static Matrix ofOnes(int numRows, int numCols) {
-        return of(1, numRows, numCols);
+        return Matrix.of(1, numRows, numCols);
     }
 
     public static Matrix ofOnes(int numRowsAndCols) {
-        return ofOnes(numRowsAndCols, numRowsAndCols);
+        return Matrix.ofOnes(numRowsAndCols, numRowsAndCols);
     }
 
     public static Matrix from(double[][] nestedArray) throws MatrixIllegalArgumentException {
@@ -134,66 +135,16 @@ public class Matrix {
 
     public double[] getArray() {
         double[] newArray = new double[length];
-        System.arraycopy(array, 0, newArray, 0, length);
+        System.arraycopy(this.array, 0, newArray, 0, this.length);
         return newArray;
     }
 
     public int getNumRows() {
-        return numRows;
+        return this.numRows;
     }
 
     public int getNumCols() {
-        return numCols;
-    }
-
-    void validateRowIndex(int rowIndex) throws MatrixIllegalArgumentException {
-        if (rowIndex < 0 || rowIndex >= numRows) {
-            throw new MatrixIllegalArgumentException(
-                    String.format("'rowIndex' = (%d) has to be between 0 and %d", rowIndex, this.numRows - 1));
-        }
-    }
-
-    void validateColIndex(int colIndex) throws MatrixIllegalArgumentException {
-        if (colIndex < 0 || colIndex >= numCols) {
-            throw new MatrixIllegalArgumentException(
-                    String.format("'colIndex' = (%d) has to be between 0 and %d", colIndex, this.numCols - 1));
-        }
-    }
-
-    void validateIndex(int index) throws MatrixIllegalArgumentException {
-        if (index < 0 || index >= this.length) {
-            throw new MatrixIllegalArgumentException(
-                    String.format("'index' = (%d) has to be between 0 and %d", index, this.length - 1));
-        }
-    }
-
-    int getIndex(int rowIndex, int colIndex) throws MatrixIllegalArgumentException {
-        validateRowIndex(rowIndex);
-        validateColIndex(colIndex);
-        return rowIndex * numCols + colIndex;
-    }
-
-    int getRowIndex(int index) throws MatrixIllegalArgumentException {
-        validateIndex(index);
-        return index / numCols;
-    }
-
-    int getColIndex(int index) throws MatrixIllegalArgumentException {
-        validateIndex(index);
-        return index % numCols;
-    }
-
-    public double[] getRow(int rowIndex) throws MatrixIllegalArgumentException {
-        int index = getIndex(rowIndex, 0);
-        return Arrays.copyOfRange(array, index, index + numCols);
-    }
-
-    public double[] getCol(int colIndex) throws MatrixIllegalArgumentException {
-        double[] col = new double[numRows];
-        for (int rowIndex = 0; rowIndex < numRows; rowIndex++) {
-            col[rowIndex] = array[getIndex(rowIndex, colIndex)];
-        }
-        return col;
+        return this.numCols;
     }
 
     @Override
@@ -213,12 +164,12 @@ public class Matrix {
 
     public String toString(String format, String rowDelimiter, String colDelimiter) {
         String[] string = new String[numRows];
-        for (int i = 0; i < numRows; i++) {
+        for (int rowIndex = 0; rowIndex < numRows; rowIndex++) {
             String[] row = new String[numCols];
-            for (int j = 0; j < numCols; j++) {
-                row[j] = String.format(format,  array[getIndex(i, j)]);
+            for (int colIndex = 0; colIndex < numCols; colIndex++) {
+                row[colIndex] = String.format(format,  array[getIndex(rowIndex, colIndex)]);
             }
-            string[i] = String.join(colDelimiter, row);
+            string[rowIndex] = String.join(colDelimiter, row);
         }
         return "Matrix{" + String.join(rowDelimiter, string) + "}";
     }
@@ -232,21 +183,66 @@ public class Matrix {
         return toString("%.4e");
     }
 
-    public Matrix copy() {
-        return create(array, numRows, numCols);
+//    private IntStream getRowIndicesStream() {
+//        return IntStream.range(0, this.numRows);
+//    }
+//
+//    private IntStream getColIndicesStream() {
+//        return IntStream.range(0, this.numCols);
+//    }
+//
+//    private IntStream getIndicesStream() {
+//        return IntStream.range(0, this.length);
+//    }
+
+    private void validateRowIndex(int rowIndex) throws MatrixIllegalArgumentException {
+        if (rowIndex < 0 || rowIndex >= this.numRows) {
+            throw new MatrixIllegalArgumentException(
+                    String.format("'rowIndex' = (%d) has to be between 0 and %d", rowIndex, this.numRows - 1));
+        }
     }
 
-    public double get(int i, int j) {
-        return array[getIndex(i, j)];
+    private void validateColIndex(int colIndex) throws MatrixIllegalArgumentException {
+        if (colIndex < 0 || colIndex >= this.numCols) {
+            throw new MatrixIllegalArgumentException(
+                    String.format("'colIndex' = (%d) has to be between 0 and %d", colIndex, this.numCols - 1));
+        }
     }
 
-    public void set(int i, int j, double element) {
-        array[getIndex(i, j)] = element;
+    private void validateIndex(int index) throws MatrixIllegalArgumentException {
+        if (index < 0 || index >= this.length) {
+            throw new MatrixIllegalArgumentException(
+                    String.format("'index' = (%d) has to be between 0 and %d", index, this.length - 1));
+        }
+    }
+
+    int getIndex(int rowIndex, int colIndex) throws MatrixIllegalArgumentException {
+        validateRowIndex(rowIndex);
+        validateColIndex(colIndex);
+        return rowIndex * this.numCols + colIndex;
+    }
+
+    int getRowIndex(int index) throws MatrixIllegalArgumentException {
+        validateIndex(index);
+        return index / numCols;
+    }
+
+    int getColIndex(int index) throws MatrixIllegalArgumentException {
+        validateIndex(index);
+        return index % numCols;
+    }
+
+    public double get(int rowIndex, int colIndex) throws MatrixIllegalArgumentException {
+        return this.array[getIndex(rowIndex, colIndex)];
+    }
+
+    public void set(int rowIndex, int colIndex, double value) throws MatrixIllegalArgumentException {
+        this.array[getIndex(rowIndex, colIndex)] = value;
     }
 
     public void setDiagonal(double value) {
-        for (int i = 0, n = Math.min(numRows, numCols); i < n; i++) {
-            set(i, i, value);
+        for (int index = 0, n = Math.min(numRows, numCols); index < n; index++) {
+            set(index, index, value);
         }
     }
 
@@ -262,9 +258,9 @@ public class Matrix {
 
     public static Matrix instanceOfRandom(Random r, int numRows, int numCols) {
         Matrix matrix = Matrix.ofZeros(numRows, numCols);
-        for (int i = 0; i < matrix.numRows; i++) {
-            for (int j = 0; j < matrix.numCols; j++) {
-                matrix.set(i, j, r.nextGaussian());
+        for (int rowIndex = 0; rowIndex < matrix.numRows; rowIndex++) {
+            for (int colIndex = 0; colIndex < matrix.numCols; colIndex++) {
+                matrix.set(rowIndex, colIndex, r.nextGaussian());
             }
         }
         return matrix;
@@ -275,8 +271,7 @@ public class Matrix {
     }
 
     public static Matrix instanceOfRandom(long seed, int numRows, int numCols) {
-        Random r = new Random();
-        r.setSeed(seed);
+        Random r = new Random(seed);
         return instanceOfRandom(r, numRows, numCols);
     }
 
@@ -291,6 +286,23 @@ public class Matrix {
 
     public static Matrix instanceOfRandom(int numRowsAndCols) {
         return instanceOfRandom(numRowsAndCols, numRowsAndCols);
+    }
+
+    public double[] getRow(int rowIndex) throws MatrixIllegalArgumentException {
+        int index = getIndex(rowIndex, 0);
+        return Arrays.copyOfRange(array, index, index + numCols);
+    }
+
+    public double[] getCol(int colIndex) throws MatrixIllegalArgumentException {
+        double[] col = new double[numRows];
+        for (int rowIndex = 0; rowIndex < numRows; rowIndex++) {
+            col[rowIndex] = array[getIndex(rowIndex, colIndex)];
+        }
+        return col;
+    }
+
+    public Matrix copy() {
+        return create(array, numRows, numCols);
     }
 
 //    public static Matrix add(Matrix A, Matrix B) {
