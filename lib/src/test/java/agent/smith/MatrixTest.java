@@ -1226,7 +1226,7 @@ public class MatrixTest {
 
     @ParameterizedTest
     @VariableSource("sumExceptionArguments")
-    public void testAddMatrixMatrixStaticException(Matrix[] matrices, String expected) {
+    public void testSumException(Matrix[] matrices, String expected) {
         Exception thrown = assertThrows(MatrixIllegalArgumentException.class,
                 () -> Matrix.sum(matrices));
         assertEquals(expected, thrown.getMessage());
@@ -1285,6 +1285,106 @@ public class MatrixTest {
         for (Matrix matrix: matrices) {
             assertNotSame(matrix, actual);
         }
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+    // multiply (matrix with double)
+    @SuppressWarnings("unused")
+    static Stream<Arguments> multiplyDoubleArguments = Stream.of(
+            Arguments.of(
+                    Matrix.create(new double[]{1}, 1, 1),
+                    1,
+                    Matrix.create(new double[]{1}, 1, 1))
+            , Arguments.of(
+                    Matrix.create(new double[]{1}, 1, 1),
+                    0,
+                    Matrix.create(new double[]{0}, 1, 1))
+            , Arguments.of(
+                    Matrix.create(new double[]{2}, 1, 1),
+                    2,
+                    Matrix.create(new double[]{4}, 1, 1))
+            , Arguments.of(
+                    Matrix.create(new double[]{2}, 1, 1),
+                    3,
+                    Matrix.create(new double[]{6}, 1, 1))
+            , Arguments.of(
+                    Matrix.create(new double[]{1, 2, 3, 4}, 2, 2),
+                    3,
+                    Matrix.create(new double[]{3, 6, 9, 12}, 2, 2))
+    );
+
+    @ParameterizedTest
+    @VariableSource("multiplyDoubleArguments")
+    public void testMultiplyDouble(Matrix matrix, double value, Matrix expected) {
+        Matrix actual = matrix.multiply(value);
+        assertEquals(expected, actual);
+        assertSame(matrix, actual);
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+    // prod (matrix with matrix)
+    @SuppressWarnings("unused")
+    static Stream<Arguments> prodExceptionArguments = Stream.of(
+            // left == null
+            Arguments.of(
+                    null,
+                    Matrix.create(new double[] {1}, 1, 1),
+                    "Input matrix cannot be null")
+            // right == null
+            , Arguments.of(
+                    Matrix.create(new double[] {1}, 1, 1),
+                    null,
+                    "Input matrix cannot be null")
+            // left.numCols != right.numRows
+            , Arguments.of(
+                    Matrix.create(new double[] {1}, 1, 1),
+                    Matrix.create(new double[] {1, 2}, 2, 1),
+                    "Dimension mismatch for taking product of matrices")
+            // left.numCols != right.numRows
+            , Arguments.of(
+                    Matrix.create(new double[] {1, 2}, 1, 2),
+                    Matrix.create(new double[] {1}, 1, 1),
+                    "Dimension mismatch for taking product of matrices")
+    );
+
+    @ParameterizedTest
+    @VariableSource("prodExceptionArguments")
+    public void testProdException(Matrix left, Matrix right, String expected) {
+        Exception thrown = assertThrows(MatrixIllegalArgumentException.class,
+                () -> Matrix.prod(left, right));
+        assertEquals(expected, thrown.getMessage());
+    }
+
+    @SuppressWarnings("unused")
+    static Stream<Arguments> prodArguments = Stream.of(
+            Arguments.of(
+                    Matrix.create(new double[]{1}, 1, 1),
+                    Matrix.create(new double[]{1}, 1, 1),
+                    Matrix.create(new double[]{1}, 1, 1))
+            , Arguments.of(
+                    Matrix.create(new double[]{1, 0, 0, 1}, 2, 2),
+                    Matrix.create(new double[]{1, 2, 3, 4}, 2, 2),
+                    Matrix.create(new double[]{1, 2, 3, 4}, 2, 2))
+            , Arguments.of(
+                    Matrix.create(new double[]{0, 0, 0, 0}, 2, 2),
+                    Matrix.create(new double[]{1, 2, 3, 4}, 2, 2),
+                    Matrix.create(new double[]{0, 0, 0, 0}, 2, 2))
+            , Arguments.of(
+                    Matrix.create(new double[]{1, 2, 3, 4}, 1, 4),
+                    Matrix.create(new double[]{1, 2, 3, 4}, 4, 1),
+                    Matrix.create(new double[]{30}, 1, 1))
+            , Arguments.of(
+                    Matrix.create(new double[]{1, 2, 3, 4}, 2, 2),
+                    Matrix.create(new double[]{1, 2}, 2, 1),
+                    Matrix.create(new double[]{5, 11}, 2, 1))
+    );
+    @ParameterizedTest
+    @VariableSource("prodArguments")
+    public void testProd(Matrix left, Matrix right  , Matrix expected) {
+        Matrix actual = Matrix.prod(left, right);
+        assertEquals(expected, actual);
+        assertNotSame(left, actual);
+        assertNotSame(right, actual);
     }
 
 }

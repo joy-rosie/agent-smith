@@ -7,7 +7,6 @@ package agent.smith;
 import java.util.Arrays;
 import java.util.Objects;
 import java.lang.Math;
-import java.util.Optional;
 import java.util.Random;
 //import java.util.stream.IntStream;
 
@@ -82,14 +81,16 @@ public class Matrix {
         return Matrix.of(Double.NaN, numRows, numCols);
     }
 
-    private static void validateMatrixNonNull(Matrix matrix) throws MatrixIllegalArgumentException {
-        if (matrix == null) {
-            throw new MatrixIllegalArgumentException("Input matrix cannot be null");
+    private static void validateMatricesNonNull(Matrix... matrices) throws MatrixIllegalArgumentException {
+        for (Matrix matrix: matrices) {
+            if (matrix == null) {
+                throw new MatrixIllegalArgumentException("Input matrix cannot be null");
+            }
         }
     }
 
     public static Matrix create(Matrix matrix) throws MatrixIllegalArgumentException {
-        validateMatrixNonNull(matrix);
+        validateMatricesNonNull(matrix);
         return Matrix.create(matrix.numRows, matrix.numCols);
     }
 
@@ -102,7 +103,7 @@ public class Matrix {
     }
 
     public static Matrix ofZeros(Matrix matrix) throws MatrixIllegalArgumentException {
-        validateMatrixNonNull(matrix);
+        validateMatricesNonNull(matrix);
         return Matrix.ofZeros(matrix.numRows, matrix.numCols);
     }
 
@@ -115,7 +116,7 @@ public class Matrix {
     }
 
     public static Matrix ofOnes(Matrix matrix) throws MatrixIllegalArgumentException {
-        validateMatrixNonNull(matrix);
+        validateMatricesNonNull(matrix);
         return Matrix.ofOnes(matrix.numRows, matrix.numCols);
     }
 
@@ -190,7 +191,7 @@ public class Matrix {
         for (int rowIndex = 0; rowIndex < this.numRows; rowIndex++) {
             String[] row = new String[this.numCols];
             for (int colIndex = 0; colIndex < this.numCols; colIndex++) {
-                row[colIndex] = String.format(format,  array[getIndex(rowIndex, colIndex)]);
+                row[colIndex] = String.format(format, array[getIndex(rowIndex, colIndex)]);
             }
             string[rowIndex] = String.join(colDelimiter, row);
         }
@@ -282,7 +283,7 @@ public class Matrix {
     }
 
     public static Matrix instanceOfEye(Matrix matrix) throws MatrixIllegalArgumentException {
-        validateMatrixNonNull(matrix);
+        validateMatricesNonNull(matrix);
         return Matrix.instanceOfEye(matrix.numRows, matrix.numCols);
     }
 
@@ -299,7 +300,7 @@ public class Matrix {
     }
 
     public static Matrix instanceOfRandom(Random r, Matrix matrix) throws MatrixIllegalArgumentException {
-        validateMatrixNonNull(matrix);
+        validateMatricesNonNull(matrix);
         return instanceOfRandom(r, matrix.numRows, matrix.numCols);
     }
 
@@ -313,7 +314,7 @@ public class Matrix {
     }
 
     public static Matrix instanceOfRandom(long seed, Matrix matrix) throws MatrixIllegalArgumentException {
-        validateMatrixNonNull(matrix);
+        validateMatricesNonNull(matrix);
         return instanceOfRandom(seed, matrix.numRows, matrix.numCols);
     }
 
@@ -327,7 +328,7 @@ public class Matrix {
     }
 
     public static Matrix instanceOfRandom(Matrix matrix) throws MatrixIllegalArgumentException {
-        validateMatrixNonNull(matrix);
+        validateMatricesNonNull(matrix);
         return instanceOfRandom(matrix.numRows, matrix.numCols);
     }
 
@@ -358,12 +359,12 @@ public class Matrix {
     private static void validateMatricesDimensionAdd(Matrix result, Matrix... matrices)
             throws MatrixIllegalArgumentException {
 
-        validateMatrixNonNull(result);
+        validateMatricesNonNull(result);
         int numRows = result.numRows;
         int numCols = result.numCols;
 
-        for (Matrix matrix: matrices) {
-            validateMatrixNonNull(matrix);
+        for (Matrix matrix : matrices) {
+            validateMatricesNonNull(matrix);
             if (numRows != matrix.numRows || numCols != matrix.numCols) {
                 throw new MatrixIllegalArgumentException("Dimension mismatch for adding matrices");
             }
@@ -377,7 +378,7 @@ public class Matrix {
 
         for (int index = 0; index < this.length; index++) {
             double addValue = 0;
-            for (Matrix matrix: matrices) {
+            for (Matrix matrix : matrices) {
                 addValue += matrix.array[index];
             }
             this.array[index] += addValue;
@@ -387,47 +388,57 @@ public class Matrix {
     }
 
     private static void validateMatricesNonEmpty(Matrix... matrices) {
-        if (matrices.length == 0) {
+        if (matrices.length < 1) {
             throw new MatrixIllegalArgumentException("Need at least one matrix for summing");
         }
     }
 
     public static Matrix sum(Matrix... matrices) throws MatrixIllegalArgumentException {
         validateMatricesNonEmpty(matrices);
-        validateMatrixNonNull(matrices[0]);
+        validateMatricesNonNull(matrices[0]);
         Matrix result = Matrix.ofZeros(matrices[0]);
         return result.add(matrices);
     }
 
-//
-//    static Matrix multiply(Matrix left, Matrix right, Matrix result) throws MatrixIllegalArgumentException {
-//
-//        if (left == null || right == null) {
-//            throw new MatrixIllegalArgumentException("Matrices to be added cannot be null");
-//        }
-//
-//        if (left.numRows != right.numRows || left.numCols != right.numCols) {
-//            throw new MatrixIllegalArgumentException(String.format(
-//                    "Dimension mismatch (left vs right), 'numRows': %d vs %d and 'numCols': %d vs %d",
-//                    left.numRows, right.numRows, left.numCols, right.numCols));
-//        }
-//
-//        if (result == null) {
-//            result = Matrix.create(left.numRows, left.numCols);
-//        }
-//
-//        if (left.numRows != result.numRows || left.numCols != result.numCols) {
-//            throw new MatrixIllegalArgumentException(String.format(
-//                    "Dimension mismatch (left vs result), 'numRows': %d vs %d and 'numCols': %d vs %d",
-//                    left.numRows, result.numRows, left.numCols, result.numCols));
-//        }
-//
-//        for (int index = 0; index < result.length; index++) {
-//            result.array[index] = left.array[index] + right.array[index];
-//        }
-//
-//        return result;
-//
-//    }
+    public Matrix multiply(double value) {
+        for (int index = 0; index < this.length; index++) {
+            this.array[index] *= value;
+        }
+        return this;
+    }
+
+    private static void validateDimensionsProd(Matrix... matrices) {
+
+        validateMatricesNonEmpty(matrices);
+        validateMatricesNonNull(matrices);
+
+        int rightNumRows = matrices[matrices.length - 1].numRows;
+        for (int matrixIndex = matrices.length - 2; matrixIndex >= 0; matrixIndex--) {
+            int leftNumCols = matrices[matrixIndex].numCols;
+            if (leftNumCols != rightNumRows) {
+                throw new MatrixIllegalArgumentException("Dimension mismatch for taking product of matrices");
+            }
+            rightNumRows = matrices[matrixIndex].numRows;
+        }
+
+    }
+
+    public static Matrix prod(Matrix left, Matrix right) {
+
+        validateDimensionsProd(left, right);
+        Matrix result = Matrix.create(left.numRows, right.numCols);
+
+        for (int rowIndex = 0; rowIndex < result.numRows; rowIndex++) {
+            for (int colIndex = 0; colIndex < result.numCols; colIndex++) {
+                double value = 0;
+                for (int index = 0; index < left.numCols; index++) {
+                    value += left.get(rowIndex, index) * right.get(index, colIndex);
+                }
+                result.set(rowIndex, colIndex, value);
+            }
+        }
+
+        return result;
+    }
 
 }
