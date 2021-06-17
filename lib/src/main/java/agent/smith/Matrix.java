@@ -386,10 +386,14 @@ public class Matrix {
         return this;
     }
 
-    public static Matrix sum(Matrix... matrices) throws MatrixIllegalArgumentException {
+    private static void validateMatricesNonEmpty(Matrix... matrices) {
         if (matrices.length == 0) {
             throw new MatrixIllegalArgumentException("Need at least one matrix for summing");
         }
+    }
+
+    public static Matrix sum(Matrix... matrices) throws MatrixIllegalArgumentException {
+        validateMatricesNonEmpty(matrices);
         validateMatrixNonNull(matrices[0]);
         Matrix result = Matrix.ofZeros(matrices[0]);
         return result.add(matrices);
