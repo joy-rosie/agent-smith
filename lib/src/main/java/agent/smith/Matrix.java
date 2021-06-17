@@ -259,14 +259,16 @@ public class Matrix {
         return this.array[getIndex(rowIndex, colIndex)];
     }
 
-    public void set(int rowIndex, int colIndex, double value) throws MatrixIllegalArgumentException {
+    public Matrix set(int rowIndex, int colIndex, double value) throws MatrixIllegalArgumentException {
         this.array[getIndex(rowIndex, colIndex)] = value;
+        return this;
     }
 
-    public void setDiagonal(double value) {
+    public Matrix setDiagonal(double value) {
         for (int index = 0, n = Math.min(this.numRows, this.numCols); index < n; index++) {
             this.set(index, index, value);
         }
+        return this;
     }
 
     public static Matrix instanceOfEye(int numRows, int numCols) throws MatrixIllegalArgumentException {

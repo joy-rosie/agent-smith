@@ -660,8 +660,9 @@ public class MatrixTest {
     @ParameterizedTest
     @VariableSource("setArguments")
     public void testSet(Matrix matrix, int rowIndex, int colIndex, double value, Matrix expected) {
-        matrix.set(rowIndex, colIndex, value);
-        assertEquals(expected, matrix);
+        Matrix actual = matrix.set(rowIndex, colIndex, value);
+        assertEquals(expected, actual);
+        assertSame(matrix, actual);
     }
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -683,8 +684,9 @@ public class MatrixTest {
     @ParameterizedTest
     @VariableSource("setDiagonalArguments")
     public void testSetDiagonal(Matrix matrix, double value, Matrix expected) {
-        matrix.setDiagonal(value);
+        Matrix actual = matrix.setDiagonal(value);
         assertEquals(expected, matrix);
+        assertSame(matrix, actual);
     }
 
     // -----------------------------------------------------------------------------------------------------------------
