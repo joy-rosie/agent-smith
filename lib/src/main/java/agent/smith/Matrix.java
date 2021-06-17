@@ -346,77 +346,67 @@ public class Matrix {
         return create(this.array, this.numRows, this.numCols);
     }
 
-    private static void validateMatricesNonNull(Matrix first, Matrix... matrices)
-            throws MatrixIllegalArgumentException {
-        validateMatrixNonNull(first);
-        for (Matrix matrix: matrices) {
-            validateMatrixNonNull(matrix);
-        }
-    }
-
     private static void validateMatricesDimensionAdd(Matrix result, Matrix... matrices)
             throws MatrixIllegalArgumentException {
+        validateMatrixNonNull(result);
         int numRows = result.numRows;
         int numCols = result.numCols;
+
         for (Matrix matrix: matrices) {
+            validateMatrixNonNull(matrix);
             if (numRows != matrix.numRows || numCols != matrix.numCols) {
                 throw new MatrixIllegalArgumentException("Dimension mismatch for adding matrices");
             }
         }
     }
 
-    private static Matrix adder(Matrix result, Matrix... matrices) throws MatrixIllegalArgumentException {
+    public Matrix add(Matrix... matrices) throws MatrixIllegalArgumentException {
 
-        validateMatricesNonNull(result, matrices);
-        validateMatricesDimensionAdd(result, matrices);
+        validateMatricesDimensionAdd(this, matrices);
 
-        for (int index = 0; index < result.length; index++) {
+        for (int index = 0; index < this.length; index++) {
             double addValue = 0;
             for (Matrix matrix: matrices) {
                 addValue += matrix.array[index];
             }
-            result.array[index] += addValue;
+            this.array[index] += addValue;
         }
 
-        return result;
-
-    }
-
-    public Matrix add(Matrix... matrices) throws MatrixIllegalArgumentException {
-        return Matrix.adder(this, matrices);
+        return this;
     }
 
     public static Matrix add(Matrix first, Matrix... matrices) throws MatrixIllegalArgumentException {
-        validateMatricesNonNull(first);
+        validateMatrixNonNull(first);
         Matrix result = first.copy();
         return result.add(matrices);
     }
 
-//    private static Matrix adder(Matrix result, double right) throws MatrixIllegalArgumentException {
+//    private static Matrix adder(Matrix result, double other) throws MatrixIllegalArgumentException {
 //
 //        validateMatricesNonNull(result);
 //        validateMatricesDimensionAdd(result);
 //
 //        for (int index = 0; index < result.length; index++) {
-//            result.array[index] += right;
+//            result.array[index] += other;
 //        }
 //
 //        return result;
 //
 //    }
 //
-//    public Matrix addFrom(double other) throws MatrixIllegalArgumentException {
+//    public Matrix add(double other) throws MatrixIllegalArgumentException {
 //        return Matrix.adder(this, other);
 //    }
 //
-//    public static Matrix add(Matrix left, double right) throws MatrixIllegalArgumentException {
-//        validateMatricesNonNull(left);
-//        Matrix result = left.copy();
-//        return Matrix.adder(left, result);
+//    public static Matrix add(Matrix first, double other) throws MatrixIllegalArgumentException {
+//        validateMatricesNonNull(first);
+//        Matrix result = first.copy();
+//        return Matrix.adder(first, result);
 //    }
 //
-//    public static Matrix add(double left, Matrix right) throws MatrixIllegalArgumentException {
-//        return Matrix.add(right, left);
+//    public static Matrix add(double first, Matrix... other) throws MatrixIllegalArgumentException {
+//        result = Matrix.add(other)
+//        return Matrix.add(other, first);
 //    }
 
 //
