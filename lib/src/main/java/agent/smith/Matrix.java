@@ -8,7 +8,6 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.lang.Math;
 import java.util.Random;
-//import java.util.stream.IntStream;
 
 public class Matrix {
 
@@ -206,18 +205,6 @@ public class Matrix {
     public String toString() {
         return toString("%.4e");
     }
-
-//    private IntStream getRowIndicesStream() {
-//        return IntStream.range(0, this.numRows);
-//    }
-//
-//    private IntStream getColIndicesStream() {
-//        return IntStream.range(0, this.numCols);
-//    }
-//
-//    private IntStream getIndicesStream() {
-//        return IntStream.range(0, this.length);
-//    }
 
     private void validateRowIndex(int rowIndex) throws MatrixIllegalArgumentException {
         if (rowIndex < 0 || rowIndex >= this.numRows) {
