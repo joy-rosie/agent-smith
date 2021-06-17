@@ -7,6 +7,7 @@ package agent.smith;
 import java.util.Arrays;
 import java.util.Objects;
 import java.lang.Math;
+import java.util.Optional;
 import java.util.Random;
 //import java.util.stream.IntStream;
 
@@ -77,24 +78,45 @@ public class Matrix {
         return new Matrix(array, numRows, numCols);
     }
 
-    public static Matrix create(int numRows, int numCols) {
+    public static Matrix create(int numRows, int numCols) throws MatrixIllegalArgumentException {
         return Matrix.of(Double.NaN, numRows, numCols);
     }
 
-    public static Matrix ofZeros(int numRows, int numCols) {
+    private static void validateMatrixNonNull(Matrix matrix) throws MatrixIllegalArgumentException {
+        if (matrix == null) {
+            throw new MatrixIllegalArgumentException("Input matrix cannot be null");
+        }
+    }
+
+    public static Matrix create(Matrix matrix) throws MatrixIllegalArgumentException {
+        validateMatrixNonNull(matrix);
+        return Matrix.create(matrix.numRows, matrix.numCols);
+    }
+
+    public static Matrix ofZeros(int numRows, int numCols) throws MatrixIllegalArgumentException {
         return Matrix.of(0, numRows, numCols);
     }
 
-    public static Matrix ofZeros(int numRowsAndCols) {
+    public static Matrix ofZeros(int numRowsAndCols) throws MatrixIllegalArgumentException {
         return Matrix.ofZeros(numRowsAndCols, numRowsAndCols);
     }
 
-    public static Matrix ofOnes(int numRows, int numCols) {
+    public static Matrix ofZeros(Matrix matrix) throws MatrixIllegalArgumentException {
+        validateMatrixNonNull(matrix);
+        return Matrix.ofZeros(matrix.numRows, matrix.numCols);
+    }
+
+    public static Matrix ofOnes(int numRows, int numCols) throws MatrixIllegalArgumentException {
         return Matrix.of(1, numRows, numCols);
     }
 
-    public static Matrix ofOnes(int numRowsAndCols) {
+    public static Matrix ofOnes(int numRowsAndCols) throws MatrixIllegalArgumentException {
         return Matrix.ofOnes(numRowsAndCols, numRowsAndCols);
+    }
+
+    public static Matrix ofOnes(Matrix matrix) throws MatrixIllegalArgumentException {
+        validateMatrixNonNull(matrix);
+        return Matrix.ofOnes(matrix.numRows, matrix.numCols);
     }
 
     public static Matrix from(double[][] nestedArray) throws MatrixIllegalArgumentException {
@@ -247,17 +269,22 @@ public class Matrix {
         }
     }
 
-    public static Matrix instanceOfEye(int numRows, int numCols) {
+    public static Matrix instanceOfEye(int numRows, int numCols) throws MatrixIllegalArgumentException {
         Matrix matrix = Matrix.ofZeros(numRows, numCols);
         matrix.setDiagonal(1);
         return matrix;
     }
 
-    public static Matrix instanceOfEye(int numRowsAndCols) {
+    public static Matrix instanceOfEye(int numRowsAndCols) throws MatrixIllegalArgumentException {
         return Matrix.instanceOfEye(numRowsAndCols, numRowsAndCols);
     }
 
-    public static Matrix instanceOfRandom(Random r, int numRows, int numCols) {
+    public static Matrix instanceOfEye(Matrix matrix) throws MatrixIllegalArgumentException {
+        validateMatrixNonNull(matrix);
+        return Matrix.instanceOfEye(matrix.numRows, matrix.numCols);
+    }
+
+    public static Matrix instanceOfRandom(Random r, int numRows, int numCols) throws MatrixIllegalArgumentException {
         Matrix matrix = Matrix.ofZeros(numRows, numCols);
         for (int index = 0; index < matrix.length; index++) {
             matrix.array[index] = r.nextGaussian();
@@ -265,26 +292,41 @@ public class Matrix {
         return matrix;
     }
 
-    public static Matrix instanceOfRandom(Random r, int numRowsAndCols) {
+    public static Matrix instanceOfRandom(Random r, int numRowsAndCols) throws MatrixIllegalArgumentException {
         return instanceOfRandom(r, numRowsAndCols, numRowsAndCols);
     }
 
-    public static Matrix instanceOfRandom(long seed, int numRows, int numCols) {
+    public static Matrix instanceOfRandom(Random r, Matrix matrix) throws MatrixIllegalArgumentException {
+        validateMatrixNonNull(matrix);
+        return instanceOfRandom(r, matrix.numRows, matrix.numCols);
+    }
+
+    public static Matrix instanceOfRandom(long seed, int numRows, int numCols) throws MatrixIllegalArgumentException {
         Random r = new Random(seed);
         return instanceOfRandom(r, numRows, numCols);
     }
 
-    public static Matrix instanceOfRandom(long seed, int numRowsAndCols) {
+    public static Matrix instanceOfRandom(long seed, int numRowsAndCols) throws MatrixIllegalArgumentException {
         return instanceOfRandom(seed, numRowsAndCols, numRowsAndCols);
     }
 
-    public static Matrix instanceOfRandom(int numRows, int numCols) {
+    public static Matrix instanceOfRandom(long seed, Matrix matrix) throws MatrixIllegalArgumentException {
+        validateMatrixNonNull(matrix);
+        return instanceOfRandom(seed, matrix.numRows, matrix.numCols);
+    }
+
+    public static Matrix instanceOfRandom(int numRows, int numCols) throws MatrixIllegalArgumentException {
         Random r = new Random();
         return instanceOfRandom(r, numRows, numCols);
     }
 
-    public static Matrix instanceOfRandom(int numRowsAndCols) {
+    public static Matrix instanceOfRandom(int numRowsAndCols) throws MatrixIllegalArgumentException {
         return instanceOfRandom(numRowsAndCols, numRowsAndCols);
+    }
+
+    public static Matrix instanceOfRandom(Matrix matrix) throws MatrixIllegalArgumentException {
+        validateMatrixNonNull(matrix);
+        return instanceOfRandom(matrix.numRows, matrix.numCols);
     }
 
     public double[] getRow(int rowIndex) throws MatrixIllegalArgumentException {
@@ -304,78 +346,108 @@ public class Matrix {
         return create(this.array, this.numRows, this.numCols);
     }
 
-    static Matrix add(Matrix left, Matrix right, Matrix result) throws MatrixIllegalArgumentException {
-
-        if (left == null || right == null) {
-            throw new MatrixIllegalArgumentException("Matrices to be added cannot be null");
+    private static void validateMatricesNonNull(Matrix first, Matrix... matrices)
+            throws MatrixIllegalArgumentException {
+        validateMatrixNonNull(first);
+        for (Matrix matrix: matrices) {
+            validateMatrixNonNull(matrix);
         }
+    }
 
-        if (left.numRows != right.numRows || left.numCols != right.numCols) {
-            throw new MatrixIllegalArgumentException(String.format(
-                    "Dimension mismatch (left vs right), 'numRows': %d vs %d and 'numCols': %d vs %d",
-                    left.numRows, right.numRows, left.numCols, right.numCols));
+    private static void validateMatricesDimensionAdd(Matrix result, Matrix... matrices)
+            throws MatrixIllegalArgumentException {
+        int numRows = result.numRows;
+        int numCols = result.numCols;
+        for (Matrix matrix: matrices) {
+            if (numRows != matrix.numRows || numCols != matrix.numCols) {
+                throw new MatrixIllegalArgumentException("Dimension mismatch for adding matrices");
+            }
         }
+    }
 
-        if (result == null) {
-            result = Matrix.create(left.numRows, left.numCols);
-        }
+    private static Matrix adder(Matrix result, Matrix... matrices) throws MatrixIllegalArgumentException {
 
-        if (left.numRows != result.numRows || left.numCols != result.numCols) {
-            throw new MatrixIllegalArgumentException(String.format(
-                    "Dimension mismatch (left vs result), 'numRows': %d vs %d and 'numCols': %d vs %d",
-                    left.numRows, result.numRows, left.numCols, result.numCols));
-        }
+        validateMatricesNonNull(result, matrices);
+        validateMatricesDimensionAdd(result, matrices);
 
         for (int index = 0; index < result.length; index++) {
-            result.array[index] = left.array[index] + right.array[index];
+            double addValue = 0;
+            for (Matrix matrix: matrices) {
+                addValue += matrix.array[index];
+            }
+            result.array[index] += addValue;
         }
 
         return result;
 
     }
 
-    public Matrix add(Matrix other) throws MatrixIllegalArgumentException {
-        return Matrix.add(this, other, this);
+    public Matrix add(Matrix... matrices) throws MatrixIllegalArgumentException {
+        return Matrix.adder(this, matrices);
     }
 
-    public static Matrix add(Matrix left, Matrix right) throws MatrixIllegalArgumentException {
-        return Matrix.add(left, right, null);
+    public static Matrix add(Matrix first, Matrix... matrices) throws MatrixIllegalArgumentException {
+        validateMatricesNonNull(first);
+        Matrix result = first.copy();
+        return result.add(matrices);
     }
 
-    static Matrix add(Matrix left, double right, Matrix result) throws MatrixIllegalArgumentException {
+//    private static Matrix adder(Matrix result, double right) throws MatrixIllegalArgumentException {
+//
+//        validateMatricesNonNull(result);
+//        validateMatricesDimensionAdd(result);
+//
+//        for (int index = 0; index < result.length; index++) {
+//            result.array[index] += right;
+//        }
+//
+//        return result;
+//
+//    }
+//
+//    public Matrix addFrom(double other) throws MatrixIllegalArgumentException {
+//        return Matrix.adder(this, other);
+//    }
+//
+//    public static Matrix add(Matrix left, double right) throws MatrixIllegalArgumentException {
+//        validateMatricesNonNull(left);
+//        Matrix result = left.copy();
+//        return Matrix.adder(left, result);
+//    }
+//
+//    public static Matrix add(double left, Matrix right) throws MatrixIllegalArgumentException {
+//        return Matrix.add(right, left);
+//    }
 
-        if (left == null) {
-            throw new MatrixIllegalArgumentException("Matrix to be added cannot be null");
-        }
-
-        if (result == null) {
-            result = Matrix.create(left.numRows, left.numCols);
-        }
-
-        if (left.numRows != result.numRows || left.numCols != result.numCols) {
-            throw new MatrixIllegalArgumentException(String.format(
-                    "Dimension mismatch (left vs result), 'numRows': %d vs %d and 'numCols': %d vs %d",
-                    left.numRows, result.numRows, left.numCols, result.numCols));
-        }
-
-        for (int index = 0; index < result.length; index++) {
-            result.array[index] = left.array[index] + right;
-        }
-
-        return result;
-
-    }
-
-    public Matrix add(double other) throws MatrixIllegalArgumentException {
-        return Matrix.add(this, other, this);
-    }
-
-    public static Matrix add(Matrix left, double right) throws MatrixIllegalArgumentException {
-        return Matrix.add(left, right, null);
-    }
-
-    public static Matrix add(double left, Matrix right) throws MatrixIllegalArgumentException {
-        return Matrix.add(right, left, null);
-    }
+//
+//    static Matrix multiply(Matrix left, Matrix right, Matrix result) throws MatrixIllegalArgumentException {
+//
+//        if (left == null || right == null) {
+//            throw new MatrixIllegalArgumentException("Matrices to be added cannot be null");
+//        }
+//
+//        if (left.numRows != right.numRows || left.numCols != right.numCols) {
+//            throw new MatrixIllegalArgumentException(String.format(
+//                    "Dimension mismatch (left vs right), 'numRows': %d vs %d and 'numCols': %d vs %d",
+//                    left.numRows, right.numRows, left.numCols, right.numCols));
+//        }
+//
+//        if (result == null) {
+//            result = Matrix.create(left.numRows, left.numCols);
+//        }
+//
+//        if (left.numRows != result.numRows || left.numCols != result.numCols) {
+//            throw new MatrixIllegalArgumentException(String.format(
+//                    "Dimension mismatch (left vs result), 'numRows': %d vs %d and 'numCols': %d vs %d",
+//                    left.numRows, result.numRows, left.numCols, result.numCols));
+//        }
+//
+//        for (int index = 0; index < result.length; index++) {
+//            result.array[index] = left.array[index] + right.array[index];
+//        }
+//
+//        return result;
+//
+//    }
 
 }
