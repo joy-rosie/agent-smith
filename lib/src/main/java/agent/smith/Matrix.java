@@ -346,8 +346,16 @@ public class Matrix {
         return create(this.array, this.numRows, this.numCols);
     }
 
+    public Matrix add(double value) {
+        for (int index = 0; index < this.length; index++) {
+            this.array[index] += value;
+        }
+        return this;
+    }
+
     private static void validateMatricesDimensionAdd(Matrix result, Matrix... matrices)
             throws MatrixIllegalArgumentException {
+
         validateMatrixNonNull(result);
         int numRows = result.numRows;
         int numCols = result.numCols;
@@ -358,6 +366,7 @@ public class Matrix {
                 throw new MatrixIllegalArgumentException("Dimension mismatch for adding matrices");
             }
         }
+
     }
 
     public Matrix add(Matrix... matrices) throws MatrixIllegalArgumentException {
@@ -375,39 +384,14 @@ public class Matrix {
         return this;
     }
 
-    public static Matrix add(Matrix first, Matrix... matrices) throws MatrixIllegalArgumentException {
-        validateMatrixNonNull(first);
-        Matrix result = first.copy();
+    public static Matrix sum(Matrix... matrices) throws MatrixIllegalArgumentException {
+        if (matrices.length == 0) {
+            throw new MatrixIllegalArgumentException("Need at least one matrix for summing");
+        }
+        validateMatrixNonNull(matrices[0]);
+        Matrix result = Matrix.ofZeros(matrices[0]);
         return result.add(matrices);
     }
-
-//    private static Matrix adder(Matrix result, double other) throws MatrixIllegalArgumentException {
-//
-//        validateMatricesNonNull(result);
-//        validateMatricesDimensionAdd(result);
-//
-//        for (int index = 0; index < result.length; index++) {
-//            result.array[index] += other;
-//        }
-//
-//        return result;
-//
-//    }
-//
-//    public Matrix add(double other) throws MatrixIllegalArgumentException {
-//        return Matrix.adder(this, other);
-//    }
-//
-//    public static Matrix add(Matrix first, double other) throws MatrixIllegalArgumentException {
-//        validateMatricesNonNull(first);
-//        Matrix result = first.copy();
-//        return Matrix.adder(first, result);
-//    }
-//
-//    public static Matrix add(double first, Matrix... other) throws MatrixIllegalArgumentException {
-//        result = Matrix.add(other)
-//        return Matrix.add(other, first);
-//    }
 
 //
 //    static Matrix multiply(Matrix left, Matrix right, Matrix result) throws MatrixIllegalArgumentException {

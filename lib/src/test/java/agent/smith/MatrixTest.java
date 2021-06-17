@@ -1017,9 +1017,39 @@ public class MatrixTest {
     }
 
     // -----------------------------------------------------------------------------------------------------------------
+    // add (matrix with double)
+    @SuppressWarnings("unused")
+    static Stream<Arguments> addDoubleArguments = Stream.of(
+            Arguments.of(
+                    Matrix.create(new double[]{1}, 1, 1),
+                    1,
+                    Matrix.create(new double[]{2}, 1, 1))
+            , Arguments.of(
+                    Matrix.create(new double[]{1}, 1, 1),
+                    2,
+                    Matrix.create(new double[]{3}, 1, 1))
+            , Arguments.of(
+                    Matrix.create(new double[]{2}, 1, 1),
+                    1,
+                    Matrix.create(new double[]{3}, 1, 1))
+            , Arguments.of(
+                    Matrix.create(new double[]{1, 2, 3, 4}, 2, 2),
+                    3,
+                    Matrix.create(new double[]{4, 5, 6, 7}, 2, 2))
+    );
+
+    @ParameterizedTest
+    @VariableSource("addDoubleArguments")
+    public void testAddDouble(Matrix matrix, double value, Matrix expected) {
+        Matrix actual = matrix.add(value);
+        assertEquals(expected, actual);
+        assertSame(matrix, actual);
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
     // add (matrix with matrix)
     @SuppressWarnings("unused")
-    static Stream<Arguments> addMatrixMatrixExceptionArguments = Stream.of(
+    static Stream<Arguments> addMatrixExceptionArguments = Stream.of(
             // matrices[0] == null
             Arguments.of(
                     Matrix.create(new double[]{0}, 1, 1),
@@ -1073,15 +1103,15 @@ public class MatrixTest {
     );
 
     @ParameterizedTest
-    @VariableSource("addMatrixMatrixExceptionArguments")
-    public void testAddMatrixMatrixException(Matrix left, Matrix[] matrices, String expected) {
+    @VariableSource("addMatrixExceptionArguments")
+    public void testAddMatrixException(Matrix matrix, Matrix[] matrices, String expected) {
         Exception thrown = assertThrows(MatrixIllegalArgumentException.class,
-                () -> left.add(matrices));
+                () -> matrix.add(matrices));
         assertEquals(expected, thrown.getMessage());
     }
 
     @SuppressWarnings("unused")
-    static Stream<Arguments> addMatrixMatrixArguments = Stream.of(
+    static Stream<Arguments> addMatrixArguments = Stream.of(
             Arguments.of(
                     Matrix.create(new double[]{1}, 1, 1),
                     new Matrix[]{},
@@ -1120,112 +1150,125 @@ public class MatrixTest {
     );
 
     @ParameterizedTest
-    @VariableSource("addMatrixMatrixArguments")
-    public void testAddMatrixMatrix(Matrix left, Matrix[] matrices, Matrix expected) {
-        left.add(matrices);
-        assertEquals(expected, left);
+    @VariableSource("addMatrixArguments")
+    public void testAddMatrix(Matrix matrix, Matrix[] matrices, Matrix expected) {
+        Matrix actual = matrix.add(matrices);
+        assertEquals(expected, actual);
+        assertSame(matrix, actual);
     }
 
+    // -----------------------------------------------------------------------------------------------------------------
+    // sum
     @SuppressWarnings("unused")
-    static Stream<Arguments> addMatrixMatrixStaticExceptionArguments = Stream.of(
-            // first == null
+    static Stream<Arguments> sumExceptionArguments = Stream.of(
+            // matrices.length = 0
             Arguments.of(
-                    null,
                     new Matrix[]{},
-                    "Input matrix cannot be null")
+                    "Need at least one matrix for summing")
             // matrices[0] == null
             , Arguments.of(
-                    Matrix.create(new double[]{0}, 1, 1),
                     new Matrix[]{null},
                     "Input matrix cannot be null")
             // matrices[1] == null
             , Arguments.of(
-                    Matrix.create(new double[]{0}, 1, 1),
                     new Matrix[]{Matrix.create(new double[]{0}, 1, 1), null},
                     "Input matrix cannot be null")
             // matrices[2] == null
             , Arguments.of(
-                    Matrix.create(new double[]{0}, 1, 1),
-                    new Matrix[]{Matrix.create(new double[]{0}, 1, 1),
+                    new Matrix[]{
+                            Matrix.create(new double[]{0}, 1, 1),
                             Matrix.create(new double[]{0}, 1, 1),
                             null},
                     "Input matrix cannot be null")
-            // first.numRows != matrices[0].numRows
+            // matrices[0].numRows != matrices[1].numRows
             , Arguments.of(
-                    Matrix.create(new double[]{0}, 1, 1),
-                    new Matrix[]{Matrix.create(new double[]{1, 2}, 2, 1)},
-                    "Dimension mismatch for adding matrices")
-            // first.numCols != matrices[0].numCols
-            , Arguments.of(
-                    Matrix.create(new double[]{0}, 1, 1),
-                    new Matrix[]{Matrix.create(new double[]{1, 2}, 1, 2)},
-                    "Dimension mismatch for adding matrices")
-            // first.numRows != matrices[0].numRows && left.numCols != matrices[0].numCols
-            , Arguments.of(
-                    Matrix.create(new double[]{0}, 1, 1),
-                    new Matrix[]{Matrix.create(new double[]{1, 2, 3, 4}, 2, 2)},
-                    "Dimension mismatch for adding matrices")
-            // first.numRows != matrices[1].numRows
-            , Arguments.of(
-                    Matrix.create(new double[]{0}, 1, 1),
-                    new Matrix[]{Matrix.create(new double[]{0}, 1, 1),
-                            Matrix.create(new double[]{1, 2}, 1, 2)},
-                    "Dimension mismatch for adding matrices")
-            // first.numCols != matrices[1].numCols
-            , Arguments.of(
-                    Matrix.create(new double[]{0}, 1, 1),
-                    new Matrix[]{Matrix.create(new double[]{0}, 1, 1),
+                    new Matrix[]{
+                            Matrix.create(new double[]{0}, 1, 1),
                             Matrix.create(new double[]{1, 2}, 2, 1)},
                     "Dimension mismatch for adding matrices")
-            // first.numRows != matrices[1].numRows && left.numCols != matrices[1].numCols
+            // matrices[0].numCols != matrices[1].numCols
             , Arguments.of(
-                    Matrix.create(new double[]{0}, 1, 1),
-                    new Matrix[]{Matrix.create(new double[]{0}, 1, 1),
+                    new Matrix[]{
+                            Matrix.create(new double[]{0}, 1, 1),
+                            Matrix.create(new double[]{1, 2}, 1, 2)},
+                    "Dimension mismatch for adding matrices")
+            // matrices[0].numRows != matrices[1].numRows && left.numCols != matrices[0].numCols != matrices[1].numCols
+            , Arguments.of(
+                    new Matrix[]{
+                            Matrix.create(new double[]{0}, 1, 1),
+                            Matrix.create(new double[]{1, 2, 3, 4}, 2, 2)},
+                    "Dimension mismatch for adding matrices")
+            // matrices[0].numRows != matrices[2].numRows
+            , Arguments.of(
+
+                    new Matrix[]{
+                            Matrix.create(new double[]{0}, 1, 1),
+                            Matrix.create(new double[]{0}, 1, 1),
+                            Matrix.create(new double[]{1, 2}, 1, 2)},
+                    "Dimension mismatch for adding matrices")
+            // matrices[0].numCols != matrices[2].numCols
+            , Arguments.of(
+                    new Matrix[]{
+                            Matrix.create(new double[]{0}, 1, 1),
+                            Matrix.create(new double[]{0}, 1, 1),
+                            Matrix.create(new double[]{1, 2}, 2, 1)},
+                    "Dimension mismatch for adding matrices")
+            // matrices[0].numRows != matrices[2].numRows && matrices[0].numCols != matrices[2].numCols
+            , Arguments.of(
+                    new Matrix[]{
+                            Matrix.create(new double[]{0}, 1, 1),
+                            Matrix.create(new double[]{0}, 1, 1),
                             Matrix.create(new double[]{1, 2, 3, 4}, 2, 2)},
                     "Dimension mismatch for adding matrices")
     );
 
     @ParameterizedTest
-    @VariableSource("addMatrixMatrixStaticExceptionArguments")
-    public void testAddMatrixMatrixStaticException(Matrix first, Matrix[] matrices, String expected) {
+    @VariableSource("sumExceptionArguments")
+    public void testAddMatrixMatrixStaticException(Matrix[] matrices, String expected) {
         Exception thrown = assertThrows(MatrixIllegalArgumentException.class,
-                () -> Matrix.add(first, matrices));
+                () -> Matrix.sum(matrices));
         assertEquals(expected, thrown.getMessage());
     }
 
     @SuppressWarnings("unused")
-    static Stream<Arguments> addMatrixMatrixStaticArguments = Stream.of(
+    static Stream<Arguments> sumArguments = Stream.of(
             Arguments.of(
-                    Matrix.create(new double[]{1}, 1, 1),
-                    new Matrix[]{},
+                    new Matrix[]{Matrix.create(new double[]{1}, 1, 1)},
                     Matrix.create(new double[]{1}, 1, 1))
             , Arguments.of(
-                    Matrix.create(new double[]{1}, 1, 1),
-                    new Matrix[]{Matrix.create(new double[]{2}, 1, 1)},
+                    new Matrix[]{
+                            Matrix.create(new double[]{1}, 1, 1),
+                            Matrix.create(new double[]{2}, 1, 1)},
                     Matrix.create(new double[]{3}, 1, 1))
             , Arguments.of(
-                    Matrix.create(new double[]{2}, 1, 1),
-                    new Matrix[]{Matrix.create(new double[]{1}, 1, 1)},
+                    new Matrix[]{
+                            Matrix.create(new double[]{2}, 1, 1),
+                            Matrix.create(new double[]{1}, 1, 1)},
                     Matrix.create(new double[]{3}, 1, 1))
             , Arguments.of(
-                    Matrix.create(new double[]{1, 2, 3, 4}, 2, 2),
-                    new Matrix[]{Matrix.create(new double[]{5, 6, 7, 8}, 2, 2)},
+                    new Matrix[]{
+                            Matrix.create(new double[]{1, 2, 3, 4}, 2, 2),
+                            Matrix.create(new double[]{5, 6, 7, 8}, 2, 2)},
                     Matrix.create(new double[]{6, 8, 10, 12}, 2, 2))
             , Arguments.of(
-                    Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 2, 3),
-                    new Matrix[]{Matrix.create(new double[]{5, 6, 7, 8, 9, 10}, 2, 3)},
+                    new Matrix[]{
+                            Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 2, 3),
+                            Matrix.create(new double[]{5, 6, 7, 8, 9, 10}, 2, 3)},
                     Matrix.create(new double[]{6, 8, 10, 12, 14, 16}, 2, 3))
             , Arguments.of(
-                    Matrix.create(new double[]{1}, 1, 1),
-                    new Matrix[]{Matrix.create(new double[]{2}, 1, 1)},
+                    new Matrix[]{
+                            Matrix.create(new double[]{1}, 1, 1),
+                            Matrix.create(new double[]{2}, 1, 1)},
                     Matrix.create(new double[]{3}, 1, 1))
             , Arguments.of(
-                    Matrix.create(new double[]{1}, 1, 1),
-                    new Matrix[]{Matrix.create(new double[]{2}, 1, 1), Matrix.create(new double[]{1}, 1, 1)},
+                    new Matrix[]{
+                            Matrix.create(new double[]{1}, 1, 1),
+                            Matrix.create(new double[]{2}, 1, 1),
+                            Matrix.create(new double[]{1}, 1, 1)},
                     Matrix.create(new double[]{4}, 1, 1))
             , Arguments.of(
-                    Matrix.create(new double[]{1}, 1, 1),
                     new Matrix[]{
+                            Matrix.create(new double[]{1}, 1, 1),
                             Matrix.create(new double[]{2}, 1, 1),
                             Matrix.create(new double[]{1}, 1, 1),
                             Matrix.create(new double[]{2}, 1, 1)},
@@ -1233,11 +1276,13 @@ public class MatrixTest {
     );
 
     @ParameterizedTest
-    @VariableSource("addMatrixMatrixStaticArguments")
-    public void addMatrixMatrixStaticArguments(Matrix first, Matrix[] matrices, Matrix expected) {
-        Matrix actual = Matrix.add(first, matrices);
+    @VariableSource("sumArguments")
+    public void testSum(Matrix[] matrices, Matrix expected) {
+        Matrix actual = Matrix.sum(matrices);
         assertEquals(expected, actual);
-        assertNotSame(first, actual);
+        for (Matrix matrix: matrices) {
+            assertNotSame(matrix, actual);
+        }
     }
 
 }
