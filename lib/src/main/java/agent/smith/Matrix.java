@@ -323,17 +323,18 @@ public class Matrix {
         return instanceOfRandom(matrix.numRows, matrix.numCols);
     }
 
-    public double[] getRow(int rowIndex) throws MatrixIllegalArgumentException {
-        int index = getIndex(rowIndex, 0);
-        return Arrays.copyOfRange(this.array, index, index + this.numCols);
+    public Matrix getRow(int rowIndex) throws MatrixIllegalArgumentException {
+        int index = this.getIndex(rowIndex, 0);
+        double[] row = Arrays.copyOfRange(this.array, index, index + this.numCols);
+        return Matrix.create(row, 1, this.numCols);
     }
 
-    public double[] getCol(int colIndex) throws MatrixIllegalArgumentException {
+    public Matrix getCol(int colIndex) throws MatrixIllegalArgumentException {
         double[] col = new double[this.numRows];
         for (int rowIndex = 0; rowIndex < this.numRows; rowIndex++) {
-            col[rowIndex] = this.array[getIndex(rowIndex, colIndex)];
+            col[rowIndex] = this.array[this.getIndex(rowIndex, colIndex)];
         }
-        return col;
+        return Matrix.create(col, this.numRows, 1);
     }
 
     public Matrix copy() {
@@ -534,30 +535,108 @@ public class Matrix {
 
     }
 
-    public static Matrix transpose(Matrix matrix) {
-        validateMatricesNonNull(matrix);
+    public Matrix transpose() {
 
-        Matrix result = Matrix.create(matrix.numCols, matrix.numRows);
+        Matrix result = Matrix.create(this.numCols, this.numRows);
         for (int rowIndex = 0; rowIndex < result.numRows; rowIndex++) {
             for (int colIndex = 0; colIndex < result.numCols; colIndex++) {
-                result.setToThis(rowIndex, colIndex, matrix.get(colIndex, rowIndex));
+                result.setToThis(rowIndex, colIndex, this.get(colIndex, rowIndex));
             }
         }
 
         return result;
     }
 
-    public Matrix transpose() {
-        return Matrix.transpose(this);
-    }
-
-    public static Matrix reshape(Matrix matrix, int numRows, int numCols) {
-        validateMatricesNonNull(matrix);
-        return Matrix.create(matrix.array, numRows, numCols);
-    }
-
     public Matrix reshape(int numRows, int numCols) {
-        return Matrix.reshape(this, numRows, numCols);
+        return Matrix.create(this.array, numRows, numCols);
     }
+
+    public double sum() {
+        double value = 0;
+        for (int index = 0; index < this.length; index++) {
+            value += this.array[index];
+        }
+        return value;
+    }
+
+    private Matrix sumOverRows() {
+        Matrix result = Matrix.create(1, this.numCols);
+        for (int colIndex = 0; colIndex < this.numCols; colIndex++) {
+            result.array[colIndex] = 0;
+            for (int rowIndex = 0; rowIndex < this.numRows; rowIndex++) {
+                result.array[colIndex] += this.get(rowIndex, colIndex);
+            }
+        }
+        return result;
+    }
+
+    private Matrix sumOverCols() {
+        Matrix result = Matrix.create(this.numRows, 1);
+        for (int rowIndex = 0; rowIndex < this.numRows; rowIndex++) {
+            result.array[rowIndex] = 0;
+            for (int colIndex = 0; colIndex < this.numCols; colIndex++) {
+                result.array[rowIndex] += this.get(rowIndex, colIndex);
+            }
+        }
+        return result;
+    }
+
+    public Matrix sum(int axis) throws MatrixIllegalArgumentException {
+
+        if (axis != 0 && axis != 1) {
+            throw new MatrixIllegalArgumentException(String.format("'axis' (%d) has to be 0 or 1", axis));
+        }
+
+        Matrix result;
+        if (axis == 0) {
+            result = this.sumOverRows();
+        } else {
+            result = this.sumOverCols();
+        }
+        return result;
+    }
+
+    public boolean isSquare() {
+        return this.numRows == this.numCols;
+    }
+
+    private static void validateSquare(Matrix matrix) throws MatrixIllegalArgumentException {
+        validateMatricesNonNull(matrix);
+        if (!matrix.isSquare()) {
+            throw new MatrixIllegalArgumentException("Matrix is not square");
+        }
+    }
+
+    public boolean isScalar() {
+        return this.numRows == 1 && this.numCols == 1;
+    }
+
+    private static void validateScalar(Matrix matrix) throws MatrixIllegalArgumentException {
+        validateMatricesNonNull(matrix);
+        if (!matrix.isScalar()) {
+            throw new MatrixIllegalArgumentException("Matrix is not scalar");
+        }
+    }
+
+    public double toDouble() {
+        validateScalar(this);
+        return this.array[0];
+    }
+
+//    public Matrix[] decomposeQRGramSchmidt(Matrix matrix) {
+//        validateSquare(matrix);
+//
+//        Matrix Q = Matrix.create(matrix);
+//        Matrix R = Matrix.create(matrix);
+//
+//        for (int colIndex = 0; colIndex < Q.numCols; colIndex++) {
+//            double normColInv = 1 / Math.sqrt(matrix.getCol(colIndex).sum());
+//            for (int rowIndex = 0; rowIndex < Q.numRows; rowIndex++) {
+//                Q.setToThis(rowIndex, colIndex, matrix.get(rowIndex, colIndex) * normColInv);
+//            }
+//        }
+//
+//        return new Matrix[] { Q, R };
+//    }
 
 }

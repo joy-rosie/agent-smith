@@ -942,19 +942,33 @@ public class MatrixTest {
 
     @SuppressWarnings("unused")
     static Stream<Arguments> getRowArguments = Stream.of(
-            Arguments.of(Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 2, 3), 0, new double[]{1, 2, 3})
-            , Arguments.of(Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 2, 3), 1,
-                    new double[]{4, 5, 6})
-            , Arguments.of(Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 3, 2), 0, new double[]{1, 2})
-            , Arguments.of(Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 3, 2), 1, new double[]{3, 4})
-            , Arguments.of(Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 3, 2), 2, new double[]{5, 6})
+            Arguments.of(
+                    Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 2, 3),
+                    0,
+                    Matrix.create(new double[]{1, 2, 3}, 1, 3))
+            , Arguments.of(
+                    Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 2, 3),
+                    1,
+                    Matrix.create(new double[]{4, 5, 6}, 1, 3))
+            , Arguments.of(
+                    Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 3, 2),
+                    0,
+                    Matrix.create(new double[]{1, 2}, 1, 2))
+            , Arguments.of(
+                    Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 3, 2),
+                    1,
+                    Matrix.create(new double[]{3, 4}, 1, 2))
+            , Arguments.of(
+                    Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 3, 2),
+                    2,
+                    Matrix.create(new double[]{5, 6}, 1, 2))
     );
 
     @ParameterizedTest
     @VariableSource("getRowArguments")
-    public void testGetRow(Matrix matrix, int rowIndex, double[] expected) {
-        double[] row = matrix.getRow(rowIndex);
-        assertArrayEquals(expected, row, 0.0);
+    public void testGetRow(Matrix matrix, int rowIndex, Matrix expected) {
+        Matrix row = matrix.getRow(rowIndex);
+        assertEquals(expected, row);
     }
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -978,20 +992,33 @@ public class MatrixTest {
 
     @SuppressWarnings("unused")
     static Stream<Arguments> getColArguments = Stream.of(
-            Arguments.of(Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 2, 3), 0, new double[]{1, 4})
-            , Arguments.of(Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 2, 3), 1, new double[]{2, 5})
-            , Arguments.of(Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 2, 3), 2, new double[]{3, 6})
-            , Arguments.of(Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 3, 2), 0,
-                    new double[]{1, 3, 5})
-            , Arguments.of(Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 3, 2), 1,
-                    new double[]{2, 4, 6})
+            Arguments.of(
+                    Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 2, 3),
+                    0,
+                    Matrix.create(new double[]{1, 4}, 2, 1))
+            , Arguments.of(
+                    Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 2, 3),
+                    1,
+                    Matrix.create(new double[]{2, 5}, 2, 1))
+            , Arguments.of(
+                    Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 2, 3),
+                    2,
+                    Matrix.create(new double[]{3, 6}, 2, 1))
+            , Arguments.of(
+                    Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 3, 2),
+                    0,
+                    Matrix.create(new double[]{1, 3, 5}, 3, 1))
+            , Arguments.of(
+                    Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 3, 2),
+                    1,
+                    Matrix.create(new double[]{2, 4, 6}, 3, 1))
     );
 
     @ParameterizedTest
     @VariableSource("getColArguments")
-    public void testGetCol(Matrix matrix, int colIndex, double[] expected) {
-        double[] col = matrix.getCol(colIndex);
-        assertArrayEquals(expected, col, 0.0);
+    public void testGetCol(Matrix matrix, int colIndex, Matrix expected) {
+        Matrix col = matrix.getCol(colIndex);
+        assertEquals(expected, col);
     }
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -1544,19 +1571,6 @@ public class MatrixTest {
 
     // -----------------------------------------------------------------------------------------------------------------
     // transpose
-    @SuppressWarnings("unused")
-    static Stream<Arguments> transposeExceptionArguments = Stream.of(
-            // matrices == null
-            Arguments.of(null, "Input matrix cannot be null")
-    );
-
-    @ParameterizedTest
-    @VariableSource("transposeExceptionArguments")
-    public void testTransposeException(Matrix matrix, String expected) {
-        Exception thrown = assertThrows(MatrixIllegalArgumentException.class,
-                () -> Matrix.transpose(matrix));
-        assertEquals(expected, thrown.getMessage());
-    }
 
     @SuppressWarnings("unused")
     static Stream<Arguments> transposeArguments = Stream.of(
@@ -1582,35 +1596,6 @@ public class MatrixTest {
     @ParameterizedTest
     @VariableSource("transposeArguments")
     public void testTranspose(Matrix matrix, Matrix expected) {
-        Matrix actual = Matrix.transpose(matrix);
-        assertEquals(expected, actual);
-        assertNotSame(matrix, actual);
-    }
-
-    @SuppressWarnings("unused")
-    static Stream<Arguments> transposeNonStaticArguments = Stream.of(
-            Arguments.of(
-                    Matrix.create(new double[] {1}, 1, 1),
-                    Matrix.create(new double[] {1}, 1, 1))
-            , Arguments.of(
-                    Matrix.create(new double[] {1, 2}, 2, 1),
-                    Matrix.create(new double[] {1, 2}, 1, 2))
-            , Arguments.of(
-                    Matrix.create(new double[] {1, 2}, 1, 2),
-                    Matrix.create(new double[] {1, 2}, 2, 1))
-            , Arguments.of(
-                    Matrix.create(new double[] {1, 2, 3, 4}, 2, 2),
-                    Matrix.create(new double[] {1, 3, 2, 4}, 2, 2))
-            , Arguments.of(
-                    Matrix.create(new double[] {1, 2, 3, 4, 5, 6}, 2, 3),
-                    Matrix.create(new double[] {1, 4, 2, 5, 3, 6}, 3, 2))
-            , Arguments.of(
-                    Matrix.create(new double[] {1, 2, 3, 4, 5, 6}, 3, 2),
-                    Matrix.create(new double[] {1, 3, 5, 2, 4, 6}, 2, 3))
-    );
-    @ParameterizedTest
-    @VariableSource("transposeNonStaticArguments")
-    public void testTransposeNonStatic(Matrix matrix, Matrix expected) {
         Matrix actual = matrix.transpose();
         assertEquals(expected, actual);
         assertNotSame(matrix, actual);
@@ -1620,10 +1605,8 @@ public class MatrixTest {
     // reshape
     @SuppressWarnings("unused")
     static Stream<Arguments> reshapeExceptionArguments = Stream.of(
-            // matrices == null
-            Arguments.of(null, 1, 1, "Input matrix cannot be null")
             // numRows * numCols != matrix.length
-            , Arguments.of(Matrix.create(new double[] {1}, 1, 1), 1, 2,
+            Arguments.of(Matrix.create(new double[] {1}, 1, 1), 1, 2,
                     "Length of 'array' (1) does not match 'numRows' * 'numCols' (2)")
             , Arguments.of(Matrix.create(new double[] {1, 2}, 1, 2), 1, 1,
                     "Length of 'array' (2) does not match 'numRows' * 'numCols' (1)")
@@ -1633,7 +1616,7 @@ public class MatrixTest {
     @VariableSource("reshapeExceptionArguments")
     public void testReshapeException(Matrix matrix, int numRows, int numCols, String expected) {
         Exception thrown = assertThrows(MatrixIllegalArgumentException.class,
-                () -> Matrix.reshape(matrix, numRows, numCols));
+                () -> matrix.reshape(numRows, numCols));
         assertEquals(expected, thrown.getMessage());
     }
 
@@ -1670,47 +1653,153 @@ public class MatrixTest {
     @ParameterizedTest
     @VariableSource("reshapeArguments")
     public void testReshape(Matrix matrix, int numRows, int numCols, Matrix expected) {
-        Matrix actual = Matrix.reshape(matrix, numRows, numCols);
+        Matrix actual = matrix.reshape(numRows, numCols);
         assertEquals(expected, actual);
         assertNotSame(matrix, actual);
     }
 
+    // -----------------------------------------------------------------------------------------------------------------
+    // sum (all elements)
     @SuppressWarnings("unused")
-    static Stream<Arguments> reshapeNonStaticArguments = Stream.of(
-            Arguments.of(
-                    Matrix.create(new double[] {1}, 1, 1), 1, 1,
-                    Matrix.create(new double[] {1}, 1, 1))
-            , Arguments.of(
-                    Matrix.create(new double[] {1, 2}, 2, 1), 2, 1,
-                    Matrix.create(new double[] {1, 2}, 2, 1))
-            , Arguments.of(
-                    Matrix.create(new double[] {1, 2}, 2, 1), 1, 2,
-                    Matrix.create(new double[] {1, 2}, 1, 2))
-            , Arguments.of(
-                    Matrix.create(new double[] {1, 2}, 1, 2), 1, 2,
-                    Matrix.create(new double[] {1, 2}, 1, 2))
-            , Arguments.of(
-                    Matrix.create(new double[] {1, 2}, 1, 2), 2, 1,
-                    Matrix.create(new double[] {1, 2}, 2, 1))
-            , Arguments.of(
-                    Matrix.create(new double[] {1, 2, 3, 4}, 2, 2), 1, 4,
-                    Matrix.create(new double[] {1, 2, 3, 4}, 1, 4))
-            , Arguments.of(
-                    Matrix.create(new double[] {1, 2, 3, 4}, 2, 2), 4, 1,
-                    Matrix.create(new double[] {1, 2, 3, 4}, 4, 1))
-            , Arguments.of(
-                    Matrix.create(new double[] {1, 2, 3, 4, 5, 6}, 2, 3), 3, 2,
-                    Matrix.create(new double[] {1, 2, 3, 4, 5, 6}, 3, 2))
-            , Arguments.of(
-                    Matrix.create(new double[] {1, 2, 3, 4, 5, 6}, 3, 2), 2, 3,
-                    Matrix.create(new double[] {1, 2, 3, 4, 5, 6}, 2, 3))
+    static Stream<Arguments> sumAllElementsArguments = Stream.of(
+            Arguments.of(Matrix.create(new double[] {1}, 1, 1), 1)
+            , Arguments.of(Matrix.create(new double[] {1, 2}, 1, 2), 3)
+            , Arguments.of(Matrix.create(new double[] {1, 2}, 2, 1), 3)
+            , Arguments.of(Matrix.create(new double[] {1, 2, 3, 4}, 2, 2), 10)
+            , Arguments.of(Matrix.create(new double[] {1, 2, 3, 4, 5, 6}, 2, 3), 21)
+            , Arguments.of(Matrix.create(new double[] {1, 2, 3, 4, 5, 6}, 3, 2), 21)
+            , Arguments.of(Matrix.create(new double[] {1, 2, 3, 4, 5, 6, 7, 8, 9}, 3, 3), 45)
     );
     @ParameterizedTest
-    @VariableSource("reshapeNonStaticArguments")
-    public void testReshapeNonStatic(Matrix matrix, int numRows, int numCols, Matrix expected) {
-        Matrix actual = matrix.reshape(numRows, numCols);
+    @VariableSource("sumAllElementsArguments")
+    public void testSumAllElements(Matrix matrix, double expected) {
+        double actual = matrix.sum();
         assertEquals(expected, actual);
-        assertNotSame(matrix, actual);
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+    // sum (over axis)
+    @SuppressWarnings("unused")
+    static Stream<Arguments> sumOverAxisExceptionArguments = Stream.of(
+            // axis != 0 && axis != 1
+            Arguments.of(Matrix.create(new double[] {1}, 1, 1), -1, "'axis' (-1) has to be 0 or 1")
+            , Arguments.of(Matrix.create(new double[] {1}, 1, 1), 2, "'axis' (2) has to be 0 or 1")
+    );
+    @ParameterizedTest
+    @VariableSource("sumOverAxisExceptionArguments")
+    public void testSumOverAxisException(Matrix matrix, int axis, String expected) {
+        Exception thrown = assertThrows(MatrixIllegalArgumentException.class,
+                () -> matrix.sum(axis));
+        assertEquals(expected, thrown.getMessage());
+    }
+
+    @SuppressWarnings("unused")
+    static Stream<Arguments> sumOverAxisArguments = Stream.of(
+            Arguments.of(
+                    Matrix.create(new double[] {1}, 1, 1),
+                    0,
+                    Matrix.create(new double[] {1}, 1, 1))
+            , Arguments.of(
+                    Matrix.create(new double[] {1}, 1, 1),
+                    1,
+                    Matrix.create(new double[] {1}, 1, 1))
+            , Arguments.of(
+                    Matrix.create(new double[] {1, 2}, 1, 2),
+                    0,
+                    Matrix.create(new double[] {1, 2}, 1, 2))
+            , Arguments.of(
+                    Matrix.create(new double[] {1, 2}, 1, 2),
+                    1,
+                    Matrix.create(new double[] {3}, 1, 1))
+            , Arguments.of(
+                    Matrix.create(new double[] {1, 2}, 2, 1),
+                    0,
+                    Matrix.create(new double[] {3}, 1, 1))
+            , Arguments.of(
+                    Matrix.create(new double[] {1, 2}, 2, 1),
+                    1,
+                    Matrix.create(new double[] {1, 2}, 2, 1))
+            , Arguments.of(
+                    Matrix.create(new double[] {1, 2, 3, 4}, 2, 2),
+                    0,
+                    Matrix.create(new double[] {4, 6}, 1, 2))
+            , Arguments.of(
+                    Matrix.create(new double[] {1, 2, 3, 4}, 2, 2),
+                    1,
+                    Matrix.create(new double[] {3, 7}, 2, 1))
+    );
+    @ParameterizedTest
+    @VariableSource("sumOverAxisArguments")
+    public void testSumOverAxisElements(Matrix matrix, int axis, Matrix expected) {
+        Matrix actual = matrix.sum(axis);
+        assertEquals(expected, actual);
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+    // isSquare
+    @SuppressWarnings("unused")
+    static Stream<Arguments> isSquareArguments = Stream.of(
+            Arguments.of(Matrix.create(new double[] {1}, 1, 1), true)
+            , Arguments.of(Matrix.create(new double[] {1, 2}, 1, 2), false)
+            , Arguments.of(Matrix.create(new double[] {1, 2}, 2, 1), false)
+            , Arguments.of(Matrix.create(new double[] {1, 2, 3, 4}, 2, 2), true)
+            , Arguments.of(Matrix.create(new double[] {1, 2, 3, 4, 5, 6}, 2, 3), false)
+            , Arguments.of(Matrix.create(new double[] {1, 2, 3, 4, 5, 6}, 3, 2), false)
+            , Arguments.of(Matrix.create(new double[] {1, 2, 3, 4, 5, 6, 7, 8, 9}, 3, 3), true)
+    );
+    @ParameterizedTest
+    @VariableSource("isSquareArguments")
+    public void testIsSquare(Matrix matrix, boolean expected) {
+        boolean actual = matrix.isSquare();
+        assertEquals(expected, actual);
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+    // isScalar
+    @SuppressWarnings("unused")
+    static Stream<Arguments> isScalarArguments = Stream.of(
+            Arguments.of(Matrix.create(new double[] {1}, 1, 1), true)
+            , Arguments.of(Matrix.create(new double[] {1, 2}, 1, 2), false)
+            , Arguments.of(Matrix.create(new double[] {1, 2}, 2, 1), false)
+            , Arguments.of(Matrix.create(new double[] {1, 2, 3, 4}, 2, 2), false)
+            , Arguments.of(Matrix.create(new double[] {1, 2, 3, 4, 5, 6}, 2, 3), false)
+            , Arguments.of(Matrix.create(new double[] {1, 2, 3, 4, 5, 6}, 3, 2), false)
+            , Arguments.of(Matrix.create(new double[] {1, 2, 3, 4, 5, 6, 7, 8, 9}, 3, 3), false)
+    );
+    @ParameterizedTest
+    @VariableSource("isScalarArguments")
+    public void testIsScalar(Matrix matrix, boolean expected) {
+        boolean actual = matrix.isScalar();
+        assertEquals(expected, actual);
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+    // toDouble
+    @SuppressWarnings("unused")
+    static Stream<Arguments> toDoubleExceptionArguments = Stream.of(
+            // matrix.numRows != 1 || matrix.numCols != 1
+            Arguments.of(Matrix.create(new double[] {1, 2}, 1, 2), "Matrix is not scalar")
+            , Arguments.of(Matrix.create(new double[] {1, 2}, 2, 1), "Matrix is not scalar")
+    );
+    @ParameterizedTest
+    @VariableSource("toDoubleExceptionArguments")
+    public void testToDoubleExceptionException(Matrix matrix, String expected) {
+        Exception thrown = assertThrows(MatrixIllegalArgumentException.class,
+                matrix::toDouble);
+        assertEquals(expected, thrown.getMessage());
+    }
+
+    @SuppressWarnings("unused")
+    static Stream<Arguments> toDoubleArguments = Stream.of(
+            Arguments.of(Matrix.create(new double[] {1}, 1, 1), 1)
+            , Arguments.of(Matrix.create(new double[] {0}, 1, 1), 0)
+            , Arguments.of(Matrix.create(new double[] {Double.NaN}, 1, 1), Double.NaN)
+    );
+    @ParameterizedTest
+    @VariableSource("toDoubleArguments")
+    public void testToDouble(Matrix matrix, double expected) {
+        double actual = matrix.toDouble();
+        assertEquals(expected, actual);
     }
 
 }
