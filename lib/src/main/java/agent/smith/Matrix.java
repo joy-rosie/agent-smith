@@ -517,4 +517,13 @@ public class Matrix {
         return Matrix.transpose(this);
     }
 
+    public static Matrix reshape(Matrix matrix, int numRows, int numCols) {
+        validateMatricesNonNull(matrix);
+        return Matrix.create(matrix.array, numRows, numCols);
+    }
+
+    public Matrix reshape(int numRows, int numCols) {
+        return Matrix.reshape(this, numRows, numCols);
+    }
+
 }
