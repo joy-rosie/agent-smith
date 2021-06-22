@@ -1166,7 +1166,7 @@ public class MatrixTest {
             // matrices.length = 0
             Arguments.of(
                     new Matrix[]{},
-                    "Need at least one matrix for summing")
+                    "Need at least one matrix")
             // matrices[0] == null
             , Arguments.of(
                     new Matrix[]{null},
@@ -1385,6 +1385,156 @@ public class MatrixTest {
         assertEquals(expected, actual);
         assertNotSame(left, actual);
         assertNotSame(right, actual);
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+    // horizontalConcatenate
+    @SuppressWarnings("unused")
+    static Stream<Arguments> horizontalConcatenateExceptionArguments = Stream.of(
+            // matrices == {}
+            Arguments.of(
+                    new Matrix[] {},
+                    "Need at least one matrix")
+            // matrices == {null}
+            , Arguments.of(
+                    new Matrix[] {null},
+                    "Input matrix cannot be null")
+            // matrices == {null, ...}
+            , Arguments.of(
+                    new Matrix[] {null, Matrix.create(new double[] {1}, 1, 1)},
+                    "Input matrix cannot be null")
+            // matrices[0].numRows != matrices[1].numRows
+            , Arguments.of(
+                    new Matrix[] {
+                            Matrix.create(new double[] {1}, 1, 1),
+                            Matrix.create(new double[] {1, 2}, 2, 1)},
+                    "Dimension mismatch for 'numRows'")
+            // matrices[0].numRows != matrices[1].numRows
+            , Arguments.of(
+                    new Matrix[] {
+                            Matrix.create(new double[] {1}, 1, 1),
+                            Matrix.create(new double[] {1, 2, 3}, 3, 1)},
+                    "Dimension mismatch for 'numRows'")
+            // matrices[0].numRows != matrices[2].numRows
+            , Arguments.of(
+                    new Matrix[] {
+                            Matrix.create(new double[] {1}, 1, 1),
+                            Matrix.create(new double[] {1}, 1, 1),
+                            Matrix.create(new double[] {1, 2}, 2, 1)},
+                    "Dimension mismatch for 'numRows'")
+    );
+
+    @ParameterizedTest
+    @VariableSource("horizontalConcatenateExceptionArguments")
+    public void testHorizontalConcatenateException(Matrix[] matrices, String expected) {
+        Exception thrown = assertThrows(MatrixIllegalArgumentException.class,
+                () -> Matrix.horizontalConcatenate(matrices));
+        assertEquals(expected, thrown.getMessage());
+    }
+
+    @SuppressWarnings("unused")
+    static Stream<Arguments> horizontalConcatenateArguments = Stream.of(
+            Arguments.of(
+                    new Matrix[] {Matrix.create(new double[] {1}, 1, 1)},
+                    Matrix.create(new double[]{1}, 1, 1))
+            , Arguments.of(
+                    new Matrix[] {
+                            Matrix.create(new double[] {1}, 1, 1),
+                            Matrix.create(new double[] {2, 3}, 1, 2)},
+                    Matrix.create(new double[]{1, 2, 3}, 1, 3))
+            , Arguments.of(
+                    new Matrix[] {
+                            Matrix.create(new double[] {1}, 1, 1),
+                            Matrix.create(new double[] {2, 3}, 1, 2),
+                            Matrix.create(new double[] {4, 5, 6}, 1, 3)},
+                    Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 1, 6))
+            , Arguments.of(
+                    new Matrix[] {
+                            Matrix.create(new double[] {1, 2}, 2, 1),
+                            Matrix.create(new double[] {3, 4, 5, 6}, 2, 2),
+                            Matrix.create(new double[] {7, 8, 9, 10, 11, 12}, 2, 3)},
+                    Matrix.create(new double[]{1, 3, 4, 7, 8, 9, 2, 5, 6, 10, 11, 12}, 2, 6))
+    );
+    @ParameterizedTest
+    @VariableSource("horizontalConcatenateArguments")
+    public void testHorizontalConcatenate(Matrix[] matrices, Matrix expected) {
+        Matrix actual = Matrix.horizontalConcatenate(matrices);
+        assertEquals(expected, actual);
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+    // horizontalConcatenate
+    @SuppressWarnings("unused")
+    static Stream<Arguments> verticalConcatenateExceptionArguments = Stream.of(
+            // matrices == {}
+            Arguments.of(
+                    new Matrix[] {},
+                    "Need at least one matrix")
+            // matrices == {null}
+            , Arguments.of(
+                    new Matrix[] {null},
+                    "Input matrix cannot be null")
+            // matrices == {null, ...}
+            , Arguments.of(
+                    new Matrix[] {null, Matrix.create(new double[] {1}, 1, 1)},
+                    "Input matrix cannot be null")
+            // matrices[0].numCols != matrices[1].numCols
+            , Arguments.of(
+                    new Matrix[] {
+                            Matrix.create(new double[] {1}, 1, 1),
+                            Matrix.create(new double[] {1, 2}, 1, 2)},
+                    "Dimension mismatch for 'numCols'")
+            // matrices[0].numCols != matrices[1].numCols
+            , Arguments.of(
+                    new Matrix[] {
+                            Matrix.create(new double[] {1}, 1, 1),
+                            Matrix.create(new double[] {1, 2, 3}, 1, 3)},
+                    "Dimension mismatch for 'numCols'")
+            // matrices[0].numCols != matrices[2].numCols
+            , Arguments.of(
+                    new Matrix[] {
+                            Matrix.create(new double[] {1}, 1, 1),
+                            Matrix.create(new double[] {1}, 1, 1),
+                            Matrix.create(new double[] {1, 2}, 1, 2)},
+                    "Dimension mismatch for 'numCols'")
+    );
+
+    @ParameterizedTest
+    @VariableSource("verticalConcatenateExceptionArguments")
+    public void testVerticalConcatenateException(Matrix[] matrices, String expected) {
+        Exception thrown = assertThrows(MatrixIllegalArgumentException.class,
+                () -> Matrix.verticalConcatenate(matrices));
+        assertEquals(expected, thrown.getMessage());
+    }
+
+    @SuppressWarnings("unused")
+    static Stream<Arguments> verticalConcatenateArguments = Stream.of(
+            Arguments.of(
+                    new Matrix[] {Matrix.create(new double[] {1}, 1, 1)},
+                    Matrix.create(new double[]{1}, 1, 1))
+            , Arguments.of(
+                    new Matrix[] {
+                            Matrix.create(new double[] {1}, 1, 1),
+                            Matrix.create(new double[] {2, 3}, 2, 1)},
+                    Matrix.create(new double[]{1, 2, 3}, 3, 1))
+            , Arguments.of(
+                    new Matrix[] {
+                            Matrix.create(new double[] {1}, 1, 1),
+                            Matrix.create(new double[] {2, 3}, 2, 1),
+                            Matrix.create(new double[] {4, 5, 6}, 3, 1)},
+                    Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 6, 1))
+            , Arguments.of(
+                    new Matrix[] {
+                            Matrix.create(new double[] {1, 2}, 1, 2),
+                            Matrix.create(new double[] {3, 4, 5, 6}, 2, 2),
+                            Matrix.create(new double[] {7, 8, 9, 10, 11, 12}, 3, 2)},
+                    Matrix.create(new double[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}, 6, 2))
+    );
+    @ParameterizedTest
+    @VariableSource("verticalConcatenateArguments")
+    public void testVerticalConcatenate(Matrix[] matrices, Matrix expected) {
+        Matrix actual = Matrix.verticalConcatenate(matrices);
+        assertEquals(expected, actual);
     }
 
 }

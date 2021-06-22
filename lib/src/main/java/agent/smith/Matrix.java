@@ -376,7 +376,7 @@ public class Matrix {
 
     private static void validateMatricesNonEmpty(Matrix... matrices) {
         if (matrices.length < 1) {
-            throw new MatrixIllegalArgumentException("Need at least one matrix for summing");
+            throw new MatrixIllegalArgumentException("Need at least one matrix");
         }
     }
 
@@ -426,6 +426,78 @@ public class Matrix {
         }
 
         return result;
+    }
+
+    private static int validateHorizontalConcatenate(Matrix... matrices) throws MatrixIllegalArgumentException {
+
+        validateMatricesNonEmpty(matrices);
+        validateMatricesNonNull(matrices[0]);
+        int numRows = matrices[0].numRows;
+        int numCols = 0;
+
+        for (Matrix matrix : matrices) {
+            validateMatricesNonNull(matrix);
+            if (numRows != matrix.numRows) {
+                throw new MatrixIllegalArgumentException("Dimension mismatch for 'numRows'");
+            }
+            numCols += matrix.numCols;
+        }
+
+        return numCols;
+    }
+
+    public static Matrix horizontalConcatenate(Matrix... matrices) throws MatrixIllegalArgumentException {
+        int numCols = validateHorizontalConcatenate(matrices);
+        int numRows = matrices[0].numRows;
+
+        Matrix result = Matrix.create(numRows, numCols);
+
+        for (int rowIndex = 0; rowIndex < result.numRows; rowIndex++) {
+            int runningNumCols = 0;
+            for (Matrix matrix: matrices) {
+                System.arraycopy(matrix.array, matrix.getIndex(rowIndex, 0),
+                        result.array, result.getIndex(rowIndex, runningNumCols), matrix.numCols);
+                runningNumCols += matrix.numCols;
+            }
+        }
+
+        return result;
+
+    }
+
+    private static int validateVerticalConcatenate(Matrix... matrices) throws MatrixIllegalArgumentException {
+
+        validateMatricesNonEmpty(matrices);
+        validateMatricesNonNull(matrices[0]);
+        int numRows = 0;
+        int numCols = matrices[0].numCols;
+
+        for (Matrix matrix : matrices) {
+            validateMatricesNonNull(matrix);
+            if (numCols != matrix.numCols) {
+                throw new MatrixIllegalArgumentException("Dimension mismatch for 'numCols'");
+            }
+            numRows += matrix.numRows;
+        }
+
+        return numRows;
+    }
+
+    public static Matrix verticalConcatenate(Matrix... matrices) throws MatrixIllegalArgumentException {
+
+        int numRows = validateVerticalConcatenate(matrices);
+        int numCols = matrices[0].numCols;
+
+        Matrix result = Matrix.create(numRows, numCols);
+
+        int runningLength = 0;
+        for (Matrix matrix: matrices) {
+            System.arraycopy(matrix.array, 0, result.array, runningLength, matrix.length);
+            runningLength += matrix.length;
+        }
+
+        return result;
+
     }
 
 }
