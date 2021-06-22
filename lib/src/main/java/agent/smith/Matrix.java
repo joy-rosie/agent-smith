@@ -500,4 +500,21 @@ public class Matrix {
 
     }
 
+    public static Matrix transpose(Matrix matrix) {
+        validateMatricesNonNull(matrix);
+
+        Matrix result = Matrix.create(matrix.numCols, matrix.numRows);
+        for (int rowIndex = 0; rowIndex < result.numRows; rowIndex++) {
+            for (int colIndex = 0; colIndex < result.numCols; colIndex++) {
+                result.set(rowIndex, colIndex, matrix.get(colIndex, rowIndex));
+            }
+        }
+
+        return result;
+    }
+
+    public Matrix transpose() {
+        return Matrix.transpose(this);
+    }
+
 }

@@ -1537,4 +1537,78 @@ public class MatrixTest {
         assertEquals(expected, actual);
     }
 
+    // -----------------------------------------------------------------------------------------------------------------
+    // horizontalConcatenate
+    @SuppressWarnings("unused")
+    static Stream<Arguments> transposeExceptionArguments = Stream.of(
+            // matrices == null
+            Arguments.of(null, "Input matrix cannot be null")
+    );
+
+    @ParameterizedTest
+    @VariableSource("transposeExceptionArguments")
+    public void testTransposeException(Matrix matrix, String expected) {
+        Exception thrown = assertThrows(MatrixIllegalArgumentException.class,
+                () -> Matrix.transpose(matrix));
+        assertEquals(expected, thrown.getMessage());
+    }
+
+    @SuppressWarnings("unused")
+    static Stream<Arguments> transposeArguments = Stream.of(
+            Arguments.of(
+                    Matrix.create(new double[] {1}, 1, 1),
+                    Matrix.create(new double[] {1}, 1, 1))
+            , Arguments.of(
+                    Matrix.create(new double[] {1, 2}, 2, 1),
+                    Matrix.create(new double[] {1, 2}, 1, 2))
+            , Arguments.of(
+                    Matrix.create(new double[] {1, 2}, 1, 2),
+                    Matrix.create(new double[] {1, 2}, 2, 1))
+            , Arguments.of(
+                    Matrix.create(new double[] {1, 2, 3, 4}, 2, 2),
+                    Matrix.create(new double[] {1, 3, 2, 4}, 2, 2))
+            , Arguments.of(
+                    Matrix.create(new double[] {1, 2, 3, 4, 5, 6}, 2, 3),
+                    Matrix.create(new double[] {1, 4, 2, 5, 3, 6}, 3, 2))
+            , Arguments.of(
+                    Matrix.create(new double[] {1, 2, 3, 4, 5, 6}, 3, 2),
+                    Matrix.create(new double[] {1, 3, 5, 2, 4, 6}, 2, 3))
+    );
+    @ParameterizedTest
+    @VariableSource("transposeArguments")
+    public void testTranspose(Matrix matrix, Matrix expected) {
+        Matrix actual = Matrix.transpose(matrix);
+        assertEquals(expected, actual);
+        assertNotSame(matrix, actual);
+    }
+
+    @SuppressWarnings("unused")
+    static Stream<Arguments> transposeNonStaticArguments = Stream.of(
+            Arguments.of(
+                    Matrix.create(new double[] {1}, 1, 1),
+                    Matrix.create(new double[] {1}, 1, 1))
+            , Arguments.of(
+                    Matrix.create(new double[] {1, 2}, 2, 1),
+                    Matrix.create(new double[] {1, 2}, 1, 2))
+            , Arguments.of(
+                    Matrix.create(new double[] {1, 2}, 1, 2),
+                    Matrix.create(new double[] {1, 2}, 2, 1))
+            , Arguments.of(
+                    Matrix.create(new double[] {1, 2, 3, 4}, 2, 2),
+                    Matrix.create(new double[] {1, 3, 2, 4}, 2, 2))
+            , Arguments.of(
+                    Matrix.create(new double[] {1, 2, 3, 4, 5, 6}, 2, 3),
+                    Matrix.create(new double[] {1, 4, 2, 5, 3, 6}, 3, 2))
+            , Arguments.of(
+                    Matrix.create(new double[] {1, 2, 3, 4, 5, 6}, 3, 2),
+                    Matrix.create(new double[] {1, 3, 5, 2, 4, 6}, 2, 3))
+    );
+    @ParameterizedTest
+    @VariableSource("transposeNonStaticArguments")
+    public void testTransposeNonStatic(Matrix matrix, Matrix expected) {
+        Matrix actual = matrix.transpose();
+        assertEquals(expected, actual);
+        assertNotSame(matrix, actual);
+    }
+
 }
