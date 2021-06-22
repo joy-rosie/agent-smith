@@ -264,6 +264,11 @@ public class Matrix {
         return this;
     }
 
+    public Matrix setDiagonal(double value) {
+        Matrix result = this.copy();
+        return result.setDiagonalToThis(value);
+    }
+
     public static Matrix instanceOfEye(int numRows, int numCols) throws MatrixIllegalArgumentException {
         Matrix matrix = Matrix.ofZeros(numRows, numCols);
         return matrix.setDiagonalToThis(1);

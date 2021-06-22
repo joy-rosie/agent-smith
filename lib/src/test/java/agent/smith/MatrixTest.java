@@ -246,7 +246,6 @@ public class MatrixTest {
             , Arguments.of(1, 0, "'numCols' (0) has to be a positive integer")
             , Arguments.of(1, -1, "'numCols' (-1) has to be a positive integer")
     );
-
     @ParameterizedTest
     @VariableSource("ofOnesRectangleExceptionArguments")
     public void testOfOnesRectangleException(int numRows, int numCols, String expected) {
@@ -264,7 +263,6 @@ public class MatrixTest {
             , Arguments.of(2, 3, new double[]{1, 1, 1, 1, 1, 1}, 2, 3)
             , Arguments.of(3, 2, new double[]{1, 1, 1, 1, 1, 1}, 3, 2)
     );
-
     @ParameterizedTest
     @VariableSource("ofOnesRectangleArguments")
     public void testOfOnesRectangle(int numRows, int numCols, double[] expectedArray, int expectedNumRows,
@@ -281,7 +279,6 @@ public class MatrixTest {
             Arguments.of(0, "'numRows' (0) has to be a positive integer")
             , Arguments.of(-1, "'numRows' (-1) has to be a positive integer")
     );
-
     @ParameterizedTest
     @VariableSource("ofOnesSquareExceptionArguments")
     public void testOfOnesSquareException(int numRowsAndCols, String expected) {
@@ -297,7 +294,6 @@ public class MatrixTest {
             , Arguments.of(2, new double[]{1, 1, 1, 1}, 2, 2)
             , Arguments.of(3, new double[]{1, 1, 1, 1, 1, 1, 1, 1, 1}, 3, 3)
     );
-
     @ParameterizedTest
     @VariableSource("ofOnesSquareArguments")
     public void testOfOnesSquare(int numRowsAndCols, double[] expectedArray, int expectedNumRows, int expectedNumCols) {
@@ -305,6 +301,36 @@ public class MatrixTest {
         assertArrayEquals(expectedArray, matrix.getArray());
         assertEquals(expectedNumRows, matrix.getNumRows());
         assertEquals(expectedNumCols, matrix.getNumCols());
+    }
+
+    // ofOnes
+    @SuppressWarnings("unused")
+    static Stream<Arguments> ofOnesMatrixExceptionArguments = Stream.of(
+            // matrix == null
+            Arguments.of(null, "Input matrix cannot be null")
+    );
+    @ParameterizedTest
+    @VariableSource("ofOnesMatrixExceptionArguments")
+    public void testOfOnesMatrixException(Matrix matrix, String expected) {
+        Exception thrown = assertThrows(MatrixIllegalArgumentException.class, () -> Matrix.ofOnes(matrix));
+        assertEquals(expected, thrown.getMessage());
+    }
+
+    @SuppressWarnings("unused")
+    static Stream<Arguments> ofOnesMatrixArguments = Stream.of(
+            // singleton
+            Arguments.of(Matrix.create(new double[] {0}, 1, 1), new double[]{1}, 1, 1)
+            // non singleton
+            , Arguments.of(Matrix.create(new double[] {0, 0, 0, 0}, 2, 2), new double[]{1, 1, 1, 1}, 2, 2)
+    );
+    @ParameterizedTest
+    @VariableSource("ofOnesMatrixArguments")
+    public void testOfOnesMatrix(Matrix matrix, double[] expectedArray, int expectedNumRows, int expectedNumCols) {
+        Matrix actual = Matrix.ofOnes(matrix);
+        assertArrayEquals(expectedArray, actual.getArray());
+        assertEquals(expectedNumRows, actual.getNumRows());
+        assertEquals(expectedNumCols, actual.getNumCols());
+        assertNotSame(matrix, actual);
     }
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -697,11 +723,43 @@ public class MatrixTest {
             , Arguments.of(Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 3, 2), 2, 1, 0,
                     Matrix.create(new double[]{1, 2, 3, 4, 5, 0}, 3, 2))
     );
-
     @ParameterizedTest
     @VariableSource("setArguments")
     public void testSet(Matrix matrix, int rowIndex, int colIndex, double value, Matrix expected) {
         Matrix actual = matrix.set(rowIndex, colIndex, value);
+        assertEquals(expected, actual);
+        assertNotSame(matrix, actual);
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+    // setDiagonal
+    @SuppressWarnings("unused")
+    static Stream<Arguments> setDiagonalArguments = Stream.of(
+            Arguments.of(
+                    Matrix.create(new double[]{0}, 1, 1),
+                    1,
+                    Matrix.create(new double[]{1}, 1, 1)
+            )
+            , Arguments.of(
+                    Matrix.create(new double[]{0, 0}, 1, 2),
+                    1,
+                    Matrix.create(new double[]{1, 0}, 1, 2)
+            )
+            , Arguments.of(
+                    Matrix.create(new double[]{0, 0}, 2, 1),
+                    1,
+                    Matrix.create(new double[]{1, 0}, 2, 1)
+            )
+            , Arguments.of(
+                    Matrix.create(new double[]{0, 0, 0, 0}, 2, 2),
+                    1,
+                    Matrix.create(new double[]{1, 0, 0, 1}, 2, 2)
+            )
+    );
+    @ParameterizedTest
+    @VariableSource("setDiagonalArguments")
+    public void testSetDiagonal(Matrix matrix, double value, Matrix expected) {
+        Matrix actual = matrix.setDiagonal(value);
         assertEquals(expected, actual);
         assertNotSame(matrix, actual);
     }
@@ -772,7 +830,6 @@ public class MatrixTest {
             , Arguments.of(2, new double[]{1, 0, 0, 1}, 2, 2)
             , Arguments.of(3, new double[]{1, 0, 0, 0, 1, 0, 0, 0, 1}, 3, 3)
     );
-
     @ParameterizedTest
     @VariableSource("instanceOfEyeSquareArguments")
     public void testInstanceOfEyeSquare(int numRowsAndCols, double[] expectedArray, int expectedNumRows,
@@ -781,6 +838,42 @@ public class MatrixTest {
         assertArrayEquals(expectedArray, matrix.getArray());
         assertEquals(expectedNumRows, matrix.getNumRows());
         assertEquals(expectedNumCols, matrix.getNumCols());
+    }
+
+
+    @SuppressWarnings("unused")
+    static Stream<Arguments> instanceOfEyeMatrixExceptionArguments = Stream.of(
+            // matrix == null
+            Arguments.of(null, "Input matrix cannot be null")
+    );
+    @ParameterizedTest
+    @VariableSource("instanceOfEyeMatrixExceptionArguments")
+    public void testInstanceOfEyeMatrixException(Matrix matrix, String expected) {
+        Exception thrown = assertThrows(MatrixIllegalArgumentException.class,
+                () -> Matrix.instanceOfEye(matrix));
+        assertEquals(expected, thrown.getMessage());
+    }
+
+    @SuppressWarnings("unused")
+    static Stream<Arguments> instanceOfEyeMatrixArguments = Stream.of(
+            // singleton
+            Arguments.of(Matrix.create(new double[]{0}, 1, 1), new double[]{1}, 1, 1)
+            // non singleton
+            , Arguments.of(Matrix.create(new double[]{0, 0}, 1, 2), new double[]{1, 0}, 1, 2)
+            , Arguments.of(Matrix.create(new double[]{0, 0}, 2, 1), new double[]{1, 0}, 2, 1)
+            , Arguments.of(
+                    Matrix.create(new double[]{0, 0, 0, 0}, 2, 2),
+                    new double[]{1, 0, 0, 1}, 2, 2)
+    );
+    @ParameterizedTest
+    @VariableSource("instanceOfEyeMatrixArguments")
+    public void testInstanceOfEyeMatrix(Matrix matrix, double[] expectedArray, int expectedNumRows,
+                                        int expectedNumCols) {
+        Matrix actual = Matrix.instanceOfEye(matrix);
+        assertArrayEquals(expectedArray, actual.getArray());
+        assertEquals(expectedNumRows, actual.getNumRows());
+        assertEquals(expectedNumCols, actual.getNumCols());
+        assertNotSame(matrix, actual);
     }
 
     // -----------------------------------------------------------------------------------------------------------------
