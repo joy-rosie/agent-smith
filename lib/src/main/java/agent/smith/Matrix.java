@@ -332,9 +332,58 @@ public class Matrix {
     public Matrix getCol(int colIndex) throws MatrixIllegalArgumentException {
         double[] col = new double[this.numRows];
         for (int rowIndex = 0; rowIndex < this.numRows; rowIndex++) {
-            col[rowIndex] = this.array[this.getIndex(rowIndex, colIndex)];
+            col[rowIndex] = this.get(rowIndex, colIndex);
         }
         return Matrix.create(col, this.numRows, 1);
+    }
+
+    private void validateSetRow(Matrix row) throws MatrixIllegalArgumentException {
+        validateMatricesNonNull(row);
+        if (row.numRows != 1) {
+            throw new MatrixIllegalArgumentException(String.format(
+                    "'numRows' = (%d) has to be 1 for 'row'", row.numRows));
+        }
+        if (this.numCols != row.numCols) {
+            throw new MatrixIllegalArgumentException(String.format(
+                    "Dimension mismatch for 'numCols': 'matrix' = (%d) vs 'row' = (%d)", this.numCols, row.numCols));
+        }
+    }
+
+    public Matrix setRowToThis(Matrix row, int rowIndex) throws MatrixIllegalArgumentException {
+        validateSetRow(row);
+        int index = this.getIndex(rowIndex, 0);
+        System.arraycopy(row.array, 0, this.array, index, this.numCols);
+        return this;
+    }
+
+    public Matrix setRow(Matrix row, int rowIndex) throws MatrixIllegalArgumentException {
+        Matrix result = this.copy();
+        return result.setRowToThis(row, rowIndex);
+    }
+
+    private void validateSetCol(Matrix col) throws MatrixIllegalArgumentException {
+        validateMatricesNonNull(col);
+        if (col.numCols != 1) {
+            throw new MatrixIllegalArgumentException(String.format(
+                    "'numCols' = (%d) has to be 1 for 'col'", col.numCols));
+        }
+        if (this.numRows != col.numRows) {
+            throw new MatrixIllegalArgumentException(String.format(
+                    "Dimension mismatch for 'numRows': 'matrix' = (%d) vs 'col' = (%d)", this.numRows, col.numRows));
+        }
+    }
+
+    public Matrix setColToThis(Matrix col, int colIndex) throws MatrixIllegalArgumentException {
+        validateSetCol(col);
+        for (int rowIndex = 0; rowIndex < this.numRows; rowIndex++) {
+            this.setToThis(rowIndex, colIndex, col.get(rowIndex, 0));
+        }
+        return this;
+    }
+
+    public Matrix setCol(Matrix col, int colIndex) throws MatrixIllegalArgumentException {
+        Matrix result = this.copy();
+        return result.setColToThis(col, colIndex);
     }
 
     public Matrix copy() {

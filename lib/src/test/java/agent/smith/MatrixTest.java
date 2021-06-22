@@ -931,7 +931,6 @@ public class MatrixTest {
             , Arguments.of(Matrix.create(new double[]{0}, 1, 1), 1,
                     "'rowIndex' = (1) has to be between 0 and 0")
     );
-
     @ParameterizedTest
     @VariableSource("getRowExceptionArguments")
     public void testGetRowException(Matrix matrix, int rowIndex, String expected) {
@@ -963,12 +962,11 @@ public class MatrixTest {
                     2,
                     Matrix.create(new double[]{5, 6}, 1, 2))
     );
-
     @ParameterizedTest
     @VariableSource("getRowArguments")
     public void testGetRow(Matrix matrix, int rowIndex, Matrix expected) {
-        Matrix row = matrix.getRow(rowIndex);
-        assertEquals(expected, row);
+        Matrix actual = matrix.getRow(rowIndex);
+        assertEquals(expected, actual);
     }
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -981,7 +979,6 @@ public class MatrixTest {
             , Arguments.of(Matrix.create(new double[]{0}, 1, 1), 1,
                     "'colIndex' = (1) has to be between 0 and 0")
     );
-
     @ParameterizedTest
     @VariableSource("getColExceptionArguments")
     public void testGetColException(Matrix matrix, int colIndex, String expected) {
@@ -1013,12 +1010,189 @@ public class MatrixTest {
                     1,
                     Matrix.create(new double[]{2, 4, 6}, 3, 1))
     );
-
     @ParameterizedTest
     @VariableSource("getColArguments")
     public void testGetCol(Matrix matrix, int colIndex, Matrix expected) {
-        Matrix col = matrix.getCol(colIndex);
-        assertEquals(expected, col);
+        Matrix actual = matrix.getCol(colIndex);
+        assertEquals(expected, actual);
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+    // setRow
+    @SuppressWarnings("unused")
+    static Stream<Arguments> setRowExceptionArguments = Stream.of(
+            // row == null
+            Arguments.of(
+                    Matrix.create(new double[]{0}, 1, 1),
+                    null,
+                    0,
+                    "Input matrix cannot be null")
+            // row.numRows != 1
+            , Arguments.of(
+                    Matrix.create(new double[]{0}, 1, 1),
+                    Matrix.create(new double[]{1, 2}, 2, 1),
+                    0,
+                    "'numRows' = (2) has to be 1 for 'row'")
+            // matrix.numCols != row.numCols
+            , Arguments.of(
+                    Matrix.create(new double[]{0}, 1, 1),
+                    Matrix.create(new double[]{1, 2}, 1, 2),
+                    0,
+                    "Dimension mismatch for 'numCols': 'matrix' = (1) vs 'row' = (2)")
+            , Arguments.of(
+                    Matrix.create(new double[]{1, 2}, 1, 2),
+                    Matrix.create(new double[]{0}, 1, 1),
+                    0,
+                    "Dimension mismatch for 'numCols': 'matrix' = (2) vs 'row' = (1)")
+            // rowIndex < 0
+            , Arguments.of(
+                    Matrix.create(new double[]{0}, 1, 1),
+                    Matrix.create(new double[]{0}, 1, 1),
+                    -1,
+                    "'rowIndex' = (-1) has to be between 0 and 0")
+            // rowIndex >= matrix.numRows
+            , Arguments.of(
+                    Matrix.create(new double[]{0}, 1, 1),
+                    Matrix.create(new double[]{0}, 1, 1),
+                    1,
+                    "'rowIndex' = (1) has to be between 0 and 0")
+    );
+    @ParameterizedTest
+    @VariableSource("setRowExceptionArguments")
+    public void testSetRowException(Matrix matrix, Matrix row, int rowIndex, String expected) {
+        Exception thrown = assertThrows(MatrixIllegalArgumentException.class,
+                () -> matrix.setRow(row, rowIndex));
+        assertEquals(expected, thrown.getMessage());
+    }
+
+    @SuppressWarnings("unused")
+    static Stream<Arguments> setRowArguments = Stream.of(
+            Arguments.of(
+                    Matrix.create(new double[]{0}, 1, 1),
+                    Matrix.create(new double[]{3}, 1, 1),
+                    0,
+                    Matrix.create(new double[]{3}, 1, 1))
+            , Arguments.of(
+                    Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 2, 3),
+                    Matrix.create(new double[]{0, 0, 0}, 1, 3),
+                    0,
+                    Matrix.create(new double[]{0, 0, 0, 4, 5, 6}, 2, 3))
+            , Arguments.of(
+                    Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 2, 3),
+                    Matrix.create(new double[]{0, 0, 0}, 1, 3),
+                    1,
+                    Matrix.create(new double[]{1, 2, 3, 0, 0, 0}, 2, 3))
+            , Arguments.of(
+                    Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 3, 2),
+                    Matrix.create(new double[]{0, 0}, 1, 2),
+                    0,
+                    Matrix.create(new double[]{0, 0, 3, 4, 5, 6}, 3, 2))
+            , Arguments.of(
+                    Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 3, 2),
+                    Matrix.create(new double[]{0, 0}, 1, 2),
+                    1,
+                    Matrix.create(new double[]{1, 2, 0, 0, 5, 6}, 3, 2))
+            , Arguments.of(
+                    Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 3, 2),
+                    Matrix.create(new double[]{0, 0}, 1, 2),
+                    2,
+                    Matrix.create(new double[]{1, 2, 3, 4, 0, 0}, 3, 2))
+    );
+    @ParameterizedTest
+    @VariableSource("setRowArguments")
+    public void testSetRow(Matrix matrix, Matrix row, int rowIndex, Matrix expected) {
+        Matrix actual = matrix.setRow(row, rowIndex);
+        assertEquals(expected, actual);
+        assertNotSame(actual, matrix);
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+    // setCol
+    @SuppressWarnings("unused")
+    static Stream<Arguments> setColExceptionArguments = Stream.of(
+            // col == null
+            Arguments.of(
+                    Matrix.create(new double[]{0}, 1, 1),
+                    null,
+                    0,
+                    "Input matrix cannot be null")
+            // col.numCols != 1
+            , Arguments.of(
+                    Matrix.create(new double[]{0}, 1, 1),
+                    Matrix.create(new double[]{1, 2}, 1, 2),
+                    0,
+                    "'numCols' = (2) has to be 1 for 'col'")
+            // matrix.numRows != row.numRows
+            , Arguments.of(
+                    Matrix.create(new double[]{0}, 1, 1),
+                    Matrix.create(new double[]{1, 2}, 2, 1),
+                    0,
+                    "Dimension mismatch for 'numRows': 'matrix' = (1) vs 'col' = (2)")
+            , Arguments.of(
+                    Matrix.create(new double[]{1, 2}, 2, 1),
+                    Matrix.create(new double[]{0}, 1, 1),
+                    0,
+                    "Dimension mismatch for 'numRows': 'matrix' = (2) vs 'col' = (1)")
+            // colIndex < 0
+            , Arguments.of(
+                    Matrix.create(new double[]{0}, 1, 1),
+                    Matrix.create(new double[]{0}, 1, 1),
+                    -1,
+                    "'colIndex' = (-1) has to be between 0 and 0")
+            // colIndex >= matrix.numCols
+            , Arguments.of(
+                    Matrix.create(new double[]{0}, 1, 1),
+                    Matrix.create(new double[]{0}, 1, 1),
+                    1,
+                    "'colIndex' = (1) has to be between 0 and 0")
+    );
+    @ParameterizedTest
+    @VariableSource("setColExceptionArguments")
+    public void testSetColException(Matrix matrix, Matrix col, int colIndex, String expected) {
+        Exception thrown = assertThrows(MatrixIllegalArgumentException.class,
+                () -> matrix.setCol(col, colIndex));
+        assertEquals(expected, thrown.getMessage());
+    }
+
+    @SuppressWarnings("unused")
+    static Stream<Arguments> setColArguments = Stream.of(
+            Arguments.of(
+                    Matrix.create(new double[]{0}, 1, 1),
+                    Matrix.create(new double[]{3}, 1, 1),
+                    0,
+                    Matrix.create(new double[]{3}, 1, 1))
+            , Arguments.of(
+                    Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 2, 3),
+                    Matrix.create(new double[]{0, 0}, 2, 1),
+                    0,
+                    Matrix.create(new double[]{0, 2, 3, 0, 5, 6}, 2, 3))
+            , Arguments.of(
+                    Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 2, 3),
+                    Matrix.create(new double[]{0, 0}, 2, 1),
+                    1,
+                    Matrix.create(new double[]{1, 0, 3, 4, 0, 6}, 2, 3))
+            , Arguments.of(
+                    Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 2, 3),
+                    Matrix.create(new double[]{0, 0}, 2, 1),
+                    2,
+                    Matrix.create(new double[]{1, 2, 0, 4, 5, 0}, 2, 3))
+            , Arguments.of(
+                    Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 3, 2),
+                    Matrix.create(new double[]{0, 0, 0}, 3, 1),
+                    0,
+                    Matrix.create(new double[]{0, 2, 0, 4, 0, 6}, 3, 2))
+            , Arguments.of(
+                    Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 3, 2),
+                    Matrix.create(new double[]{0, 0, 0}, 3, 1),
+                    1,
+                    Matrix.create(new double[]{1, 0, 3, 0, 5, 0}, 3, 2))
+    );
+    @ParameterizedTest
+    @VariableSource("setColArguments")
+    public void testSetCol(Matrix matrix, Matrix col, int colIndex, Matrix expected) {
+        Matrix actual = matrix.setCol(col, colIndex);
+        assertEquals(expected, actual);
+        assertNotSame(actual, matrix);
     }
 
     // -----------------------------------------------------------------------------------------------------------------
