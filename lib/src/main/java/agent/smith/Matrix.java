@@ -247,22 +247,26 @@ public class Matrix {
         return this.array[getIndex(rowIndex, colIndex)];
     }
 
-    public Matrix set(int rowIndex, int colIndex, double value) throws MatrixIllegalArgumentException {
+    private Matrix setToThis(int rowIndex, int colIndex, double value) throws MatrixIllegalArgumentException {
         this.array[getIndex(rowIndex, colIndex)] = value;
         return this;
     }
 
-    public Matrix setDiagonal(double value) {
+    public Matrix set(int rowIndex, int colIndex, double value) throws MatrixIllegalArgumentException {
+        Matrix result = this.copy();
+        return result.setToThis(rowIndex, colIndex, value);
+    }
+
+    private Matrix setDiagonalToThis(double value) {
         for (int index = 0, n = Math.min(this.numRows, this.numCols); index < n; index++) {
-            this.set(index, index, value);
+            this.setToThis(index, index, value);
         }
         return this;
     }
 
     public static Matrix instanceOfEye(int numRows, int numCols) throws MatrixIllegalArgumentException {
         Matrix matrix = Matrix.ofZeros(numRows, numCols);
-        matrix.setDiagonal(1);
-        return matrix;
+        return matrix.setDiagonalToThis(1);
     }
 
     public static Matrix instanceOfEye(int numRowsAndCols) throws MatrixIllegalArgumentException {
@@ -442,7 +446,7 @@ public class Matrix {
                     for (int index = 0; index < left.numCols; index++) {
                         value += left.get(rowIndex, index) * right.get(index, colIndex);
                     }
-                    result.set(rowIndex, colIndex, value);
+                    result.setToThis(rowIndex, colIndex, value);
                 }
             }
         }
@@ -536,7 +540,7 @@ public class Matrix {
         Matrix result = Matrix.create(matrix.numCols, matrix.numRows);
         for (int rowIndex = 0; rowIndex < result.numRows; rowIndex++) {
             for (int colIndex = 0; colIndex < result.numCols; colIndex++) {
-                result.set(rowIndex, colIndex, matrix.get(colIndex, rowIndex));
+                result.setToThis(rowIndex, colIndex, matrix.get(colIndex, rowIndex));
             }
         }
 

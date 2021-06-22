@@ -662,31 +662,7 @@ public class MatrixTest {
     public void testSet(Matrix matrix, int rowIndex, int colIndex, double value, Matrix expected) {
         Matrix actual = matrix.set(rowIndex, colIndex, value);
         assertEquals(expected, actual);
-        assertSame(matrix, actual);
-    }
-
-    // -----------------------------------------------------------------------------------------------------------------
-    // setDiagonal
-    @SuppressWarnings("unused")
-    static Stream<Arguments> setDiagonalArguments = Stream.of(
-            Arguments.of(Matrix.create(new double[]{0}, 1, 1), 0,
-                    Matrix.create(new double[]{0}, 1, 1))
-            , Arguments.of(Matrix.create(new double[]{0}, 1, 1), 1,
-                    Matrix.create(new double[]{1}, 1, 1))
-            , Arguments.of(Matrix.create(new double[]{0, 0, 0, 0}, 2, 2), 1,
-                    Matrix.create(new double[]{1, 0, 0, 1}, 2, 2))
-            , Arguments.of(Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 2, 3), 0,
-                    Matrix.create(new double[]{0, 2, 3, 4, 0, 6}, 2, 3))
-            , Arguments.of(Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 3, 2), 0,
-                    Matrix.create(new double[]{0, 2, 3, 0, 5, 6}, 3, 2))
-    );
-
-    @ParameterizedTest
-    @VariableSource("setDiagonalArguments")
-    public void testSetDiagonal(Matrix matrix, double value, Matrix expected) {
-        Matrix actual = matrix.setDiagonal(value);
-        assertEquals(expected, matrix);
-        assertSame(matrix, actual);
+        assertNotSame(matrix, actual);
     }
 
     // -----------------------------------------------------------------------------------------------------------------
