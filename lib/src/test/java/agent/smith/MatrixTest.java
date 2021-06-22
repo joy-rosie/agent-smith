@@ -122,6 +122,47 @@ public class MatrixTest {
     }
 
     // -----------------------------------------------------------------------------------------------------------------
+    // create (Double.NaN from matrix)
+    @SuppressWarnings("unused")
+    static Stream<Arguments> createNaNFromMatrixExceptionArguments = Stream.of(
+            // matrix == null
+            Arguments.of(null, "Input matrix cannot be null")
+    );
+    @ParameterizedTest
+    @VariableSource("createNaNFromMatrixExceptionArguments")
+    public void testCreateNaNFromMatrixException(Matrix matrix, String expected) {
+        Exception thrown = assertThrows(MatrixIllegalArgumentException.class, () -> Matrix.create(matrix));
+        assertEquals(expected, thrown.getMessage());
+    }
+
+    @SuppressWarnings("unused")
+    static Stream<Arguments> createNaNFromMatrixArguments = Stream.of(
+            // singleton
+            Arguments.of(Matrix.create(new double[]{0}, 1, 1), new double[]{Double.NaN}, 1, 1)
+            // square
+            , Arguments.of(
+                    Matrix.create(new double[]{1, 2, 3, 4}, 2, 2),
+                    new double[]{Double.NaN, Double.NaN, Double.NaN, Double.NaN}, 2, 2)
+            // rectangle
+            , Arguments.of(
+                    Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 2, 3),
+                    new double[]{Double.NaN, Double.NaN, Double.NaN, Double.NaN, Double.NaN, Double.NaN}, 2, 3)
+            , Arguments.of(
+                    Matrix.create(new double[]{1, 2, 3, 4, 5, 6}, 3, 2),
+                    new double[]{Double.NaN, Double.NaN, Double.NaN, Double.NaN, Double.NaN, Double.NaN}, 3, 2)
+    );
+    @ParameterizedTest
+    @VariableSource("createNaNFromMatrixArguments")
+    public void testCreateNaNFromMatrix(Matrix matrix, double[] expectedArray, int expectedNumRows,
+                                        int expectedNumCols) {
+        Matrix actual = Matrix.create(matrix);
+        assertArrayEquals(expectedArray, actual.getArray());
+        assertEquals(expectedNumRows, actual.getNumRows());
+        assertEquals(expectedNumCols, actual.getNumCols());
+        assertNotSame(matrix, actual);
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
     // ofZeros
     @SuppressWarnings("unused")
     static Stream<Arguments> ofZerosRectangleExceptionArguments = Stream.of(
@@ -1929,9 +1970,9 @@ public class MatrixTest {
     }
 
     // -----------------------------------------------------------------------------------------------------------------
-    // isScalar
+    // isSingleton
     @SuppressWarnings("unused")
-    static Stream<Arguments> isScalarArguments = Stream.of(
+    static Stream<Arguments> isSingletonArguments = Stream.of(
             Arguments.of(Matrix.create(new double[] {1}, 1, 1), true)
             , Arguments.of(Matrix.create(new double[] {1, 2}, 1, 2), false)
             , Arguments.of(Matrix.create(new double[] {1, 2}, 2, 1), false)
@@ -1941,9 +1982,9 @@ public class MatrixTest {
             , Arguments.of(Matrix.create(new double[] {1, 2, 3, 4, 5, 6, 7, 8, 9}, 3, 3), false)
     );
     @ParameterizedTest
-    @VariableSource("isScalarArguments")
-    public void testIsScalar(Matrix matrix, boolean expected) {
-        boolean actual = matrix.isScalar();
+    @VariableSource("isSingletonArguments")
+    public void testIsSingleton(Matrix matrix, boolean expected) {
+        boolean actual = matrix.isSingleton();
         assertEquals(expected, actual);
     }
 
@@ -1952,8 +1993,8 @@ public class MatrixTest {
     @SuppressWarnings("unused")
     static Stream<Arguments> toDoubleExceptionArguments = Stream.of(
             // matrix.numRows != 1 || matrix.numCols != 1
-            Arguments.of(Matrix.create(new double[] {1, 2}, 1, 2), "Matrix is not scalar")
-            , Arguments.of(Matrix.create(new double[] {1, 2}, 2, 1), "Matrix is not scalar")
+            Arguments.of(Matrix.create(new double[] {1, 2}, 1, 2), "Matrix is not a singleton")
+            , Arguments.of(Matrix.create(new double[] {1, 2}, 2, 1), "Matrix is not a singleton")
     );
     @ParameterizedTest
     @VariableSource("toDoubleExceptionArguments")

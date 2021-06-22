@@ -656,19 +656,19 @@ public class Matrix {
         }
     }
 
-    public boolean isScalar() {
+    public boolean isSingleton() {
         return this.numRows == 1 && this.numCols == 1;
     }
 
-    private static void validateScalar(Matrix matrix) throws MatrixIllegalArgumentException {
+    private static void validateSingleton(Matrix matrix) throws MatrixIllegalArgumentException {
         validateMatricesNonNull(matrix);
-        if (!matrix.isScalar()) {
-            throw new MatrixIllegalArgumentException("Matrix is not scalar");
+        if (!matrix.isSingleton()) {
+            throw new MatrixIllegalArgumentException("Matrix is not a singleton");
         }
     }
 
     public double toDouble() {
-        validateScalar(this);
+        validateSingleton(this);
         return this.array[0];
     }
 
