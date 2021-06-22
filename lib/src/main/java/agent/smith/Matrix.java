@@ -336,11 +336,16 @@ public class Matrix {
         return create(this.array, this.numRows, this.numCols);
     }
 
-    public Matrix add(double value) {
+    private Matrix addToThis(double value) {
         for (int index = 0; index < this.length; index++) {
             this.array[index] += value;
         }
         return this;
+    }
+
+    public Matrix add(double value) {
+        Matrix result = this.copy();
+        return result.addToThis(value);
     }
 
     private static void validateMatricesDimensionAdd(Matrix result, Matrix... matrices)
@@ -359,7 +364,7 @@ public class Matrix {
 
     }
 
-    public Matrix add(Matrix... matrices) throws MatrixIllegalArgumentException {
+    private Matrix addToThis(Matrix... matrices) throws MatrixIllegalArgumentException {
 
         validateMatricesDimensionAdd(this, matrices);
 
@@ -374,7 +379,12 @@ public class Matrix {
         return this;
     }
 
-    private static void validateMatricesNonEmpty(Matrix... matrices) {
+    public Matrix add(Matrix... matrices) throws MatrixIllegalArgumentException {
+        Matrix first = this.copy();
+        return first.addToThis(matrices);
+    }
+
+    private static void validateMatricesNonEmpty(Matrix... matrices) throws MatrixIllegalArgumentException {
         if (matrices.length < 1) {
             throw new MatrixIllegalArgumentException("Need at least one matrix");
         }
@@ -387,14 +397,19 @@ public class Matrix {
         return result.add(matrices);
     }
 
-    public Matrix multiply(double value) {
+    private Matrix multiplyToThis(double value) {
         for (int index = 0; index < this.length; index++) {
             this.array[index] *= value;
         }
         return this;
     }
 
-    private static void validateDimensionsProd(Matrix... matrices) {
+    public Matrix multiply(double value) {
+        Matrix result = this.copy();
+        return result.multiplyToThis(value);
+    }
+
+    private static void validateDimensionsProd(Matrix... matrices) throws MatrixIllegalArgumentException {
 
         validateMatricesNonEmpty(matrices);
         validateMatricesNonNull(matrices);
@@ -410,22 +425,37 @@ public class Matrix {
 
     }
 
-    public static Matrix prod(Matrix left, Matrix right) {
+    public static Matrix prod(Matrix... matrices) throws MatrixIllegalArgumentException {
 
-        validateDimensionsProd(left, right);
-        Matrix result = Matrix.create(left.numRows, right.numCols);
+        validateDimensionsProd(matrices);
+        Matrix result = matrices[matrices.length - 1];
 
-        for (int rowIndex = 0; rowIndex < result.numRows; rowIndex++) {
-            for (int colIndex = 0; colIndex < result.numCols; colIndex++) {
-                double value = 0;
-                for (int index = 0; index < left.numCols; index++) {
-                    value += left.get(rowIndex, index) * right.get(index, colIndex);
+        for (int matrixIndex = matrices.length - 2; matrixIndex >= 0; matrixIndex--) {
+
+            Matrix left = matrices[matrixIndex];
+            Matrix right = result;
+            result = Matrix.create(left.numRows, right.numCols);
+
+            for (int rowIndex = 0; rowIndex < result.numRows; rowIndex++) {
+                for (int colIndex = 0; colIndex < result.numCols; colIndex++) {
+                    double value = 0;
+                    for (int index = 0; index < left.numCols; index++) {
+                        value += left.get(rowIndex, index) * right.get(index, colIndex);
+                    }
+                    result.set(rowIndex, colIndex, value);
                 }
-                result.set(rowIndex, colIndex, value);
             }
         }
 
         return result;
+    }
+
+    public Matrix multiply(Matrix matrix) throws MatrixIllegalArgumentException {
+        return Matrix.prod(this, matrix);
+    }
+
+    public Matrix multiplyLeft(Matrix matrix) throws MatrixIllegalArgumentException {
+        return Matrix.prod(matrix, this);
     }
 
     private static int validateHorizontalConcatenate(Matrix... matrices) throws MatrixIllegalArgumentException {
