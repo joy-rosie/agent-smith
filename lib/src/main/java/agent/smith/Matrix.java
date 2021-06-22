@@ -31,8 +31,8 @@ public class Matrix {
     }
 
     private void validateNumRowsNumCols() throws MatrixIllegalArgumentException {
-        validateNumRows();
-        validateNumCols();
+        this.validateNumRows();
+        this.validateNumCols();
     }
 
     private Matrix(double value, int numRows, int numCols) throws MatrixIllegalArgumentException {
@@ -41,7 +41,7 @@ public class Matrix {
         this.numCols = numCols;
         this.length = this.numRows * this.numCols;
 
-        validateNumRowsNumCols();
+        this.validateNumRowsNumCols();
 
         this.array = new double[length];
         Arrays.fill(this.array, value);
@@ -57,7 +57,7 @@ public class Matrix {
         this.numCols = numCols;
         this.length = this.numRows * this.numCols;
 
-        validateNumRowsNumCols();
+        this.validateNumRowsNumCols();
 
         if (array == null) {
             throw new MatrixIllegalArgumentException("'array' cannot be null");
@@ -89,7 +89,7 @@ public class Matrix {
     }
 
     public static Matrix create(Matrix matrix) throws MatrixIllegalArgumentException {
-        validateMatricesNonNull(matrix);
+        Matrix.validateMatricesNonNull(matrix);
         return Matrix.create(matrix.numRows, matrix.numCols);
     }
 
@@ -102,7 +102,7 @@ public class Matrix {
     }
 
     public static Matrix ofZeros(Matrix matrix) throws MatrixIllegalArgumentException {
-        validateMatricesNonNull(matrix);
+        Matrix.validateMatricesNonNull(matrix);
         return Matrix.ofZeros(matrix.numRows, matrix.numCols);
     }
 
@@ -115,7 +115,7 @@ public class Matrix {
     }
 
     public static Matrix ofOnes(Matrix matrix) throws MatrixIllegalArgumentException {
-        validateMatricesNonNull(matrix);
+        Matrix.validateMatricesNonNull(matrix);
         return Matrix.ofOnes(matrix.numRows, matrix.numCols);
     }
 
@@ -228,18 +228,18 @@ public class Matrix {
     }
 
     int getIndex(int rowIndex, int colIndex) throws MatrixIllegalArgumentException {
-        validateRowIndex(rowIndex);
-        validateColIndex(colIndex);
+        this.validateRowIndex(rowIndex);
+        this.validateColIndex(colIndex);
         return rowIndex * this.numCols + colIndex;
     }
 
     int getRowIndex(int index) throws MatrixIllegalArgumentException {
-        validateIndex(index);
+        this.validateIndex(index);
         return index / this.numCols;
     }
 
     int getColIndex(int index) throws MatrixIllegalArgumentException {
-        validateIndex(index);
+        this.validateIndex(index);
         return index % this.numCols;
     }
 
@@ -257,6 +257,14 @@ public class Matrix {
         return result.setToThis(rowIndex, colIndex, value);
     }
 
+    public Matrix getDiagonal() {
+        Matrix diagonal = Matrix.create(Math.min(this.numRows, this.numCols), 1);
+        for (int index = 0; index < diagonal.length; index++) {
+            diagonal.array[index] = this.get(index, index);
+        }
+        return diagonal;
+    }
+
     private Matrix setDiagonalToThis(double value) {
         for (int index = 0, n = Math.min(this.numRows, this.numCols); index < n; index++) {
             this.setToThis(index, index, value);
@@ -269,6 +277,40 @@ public class Matrix {
         return result.setDiagonalToThis(value);
     }
 
+    private static void validateVector(Matrix matrix) throws MatrixIllegalArgumentException {
+        Matrix.validateMatricesNonNull(matrix);
+        if (matrix.numRows != 1 && matrix.numCols != 1) {
+            throw new MatrixIllegalArgumentException(String.format(
+                    "'numRows' = (%d) or 'numCols' = (%d) has to be 1 to be vector", matrix.numRows, matrix.numCols));
+        }
+    }
+
+    private Matrix setDiagonalToThis(Matrix vector) throws MatrixIllegalArgumentException {
+
+        Matrix.validateVector(vector);
+        int diagonalLength = Math.min(this.numRows, this.numCols);
+        if (vector.length != diagonalLength) {
+            throw new MatrixIllegalArgumentException("Dimension mismatch for 'diagonal'");
+        }
+
+        for (int index = 0; index < diagonalLength; index++) {
+            this.setToThis(index, index, vector.array[index]);
+        }
+        return this;
+    }
+
+    public Matrix setDiagonal(Matrix vector) {
+        Matrix result = this.copy();
+        return result.setDiagonalToThis(vector);
+    }
+
+    public Matrix diagonalize() {
+        Matrix.validateVector(this);
+        int numRowsAndCols = Math.max(this.numRows, this.numCols);
+        Matrix result = Matrix.ofZeros(numRowsAndCols);
+        return result.setDiagonalToThis(this);
+    }
+
     public static Matrix instanceOfEye(int numRows, int numCols) throws MatrixIllegalArgumentException {
         Matrix matrix = Matrix.ofZeros(numRows, numCols);
         return matrix.setDiagonalToThis(1);
@@ -279,7 +321,7 @@ public class Matrix {
     }
 
     public static Matrix instanceOfEye(Matrix matrix) throws MatrixIllegalArgumentException {
-        validateMatricesNonNull(matrix);
+        Matrix.validateMatricesNonNull(matrix);
         return Matrix.instanceOfEye(matrix.numRows, matrix.numCols);
     }
 
@@ -296,7 +338,7 @@ public class Matrix {
     }
 
     public static Matrix instanceOfRandom(Random r, Matrix matrix) throws MatrixIllegalArgumentException {
-        validateMatricesNonNull(matrix);
+        Matrix.validateMatricesNonNull(matrix);
         return instanceOfRandom(r, matrix.numRows, matrix.numCols);
     }
 
@@ -310,7 +352,7 @@ public class Matrix {
     }
 
     public static Matrix instanceOfRandom(long seed, Matrix matrix) throws MatrixIllegalArgumentException {
-        validateMatricesNonNull(matrix);
+        Matrix.validateMatricesNonNull(matrix);
         return instanceOfRandom(seed, matrix.numRows, matrix.numCols);
     }
 
@@ -324,7 +366,7 @@ public class Matrix {
     }
 
     public static Matrix instanceOfRandom(Matrix matrix) throws MatrixIllegalArgumentException {
-        validateMatricesNonNull(matrix);
+        Matrix.validateMatricesNonNull(matrix);
         return instanceOfRandom(matrix.numRows, matrix.numCols);
     }
 
@@ -343,7 +385,7 @@ public class Matrix {
     }
 
     private void validateSetRow(Matrix row) throws MatrixIllegalArgumentException {
-        validateMatricesNonNull(row);
+        Matrix.validateMatricesNonNull(row);
         if (row.numRows != 1) {
             throw new MatrixIllegalArgumentException(String.format(
                     "'numRows' = (%d) has to be 1 for 'row'", row.numRows));
@@ -355,7 +397,7 @@ public class Matrix {
     }
 
     public Matrix setRowToThis(Matrix row, int rowIndex) throws MatrixIllegalArgumentException {
-        validateSetRow(row);
+        this.validateSetRow(row);
         int index = this.getIndex(rowIndex, 0);
         System.arraycopy(row.array, 0, this.array, index, this.numCols);
         return this;
@@ -367,7 +409,7 @@ public class Matrix {
     }
 
     private void validateSetCol(Matrix col) throws MatrixIllegalArgumentException {
-        validateMatricesNonNull(col);
+        Matrix.validateMatricesNonNull(col);
         if (col.numCols != 1) {
             throw new MatrixIllegalArgumentException(String.format(
                     "'numCols' = (%d) has to be 1 for 'col'", col.numCols));
@@ -379,7 +421,7 @@ public class Matrix {
     }
 
     public Matrix setColToThis(Matrix col, int colIndex) throws MatrixIllegalArgumentException {
-        validateSetCol(col);
+        this.validateSetCol(col);
         for (int rowIndex = 0; rowIndex < this.numRows; rowIndex++) {
             this.setToThis(rowIndex, colIndex, col.get(rowIndex, 0));
         }
@@ -410,12 +452,12 @@ public class Matrix {
     private static void validateMatricesDimensionAdd(Matrix result, Matrix... matrices)
             throws MatrixIllegalArgumentException {
 
-        validateMatricesNonNull(result);
+        Matrix.validateMatricesNonNull(result);
         int numRows = result.numRows;
         int numCols = result.numCols;
 
         for (Matrix matrix : matrices) {
-            validateMatricesNonNull(matrix);
+            Matrix.validateMatricesNonNull(matrix);
             if (numRows != matrix.numRows || numCols != matrix.numCols) {
                 throw new MatrixIllegalArgumentException("Dimension mismatch for adding matrices");
             }
@@ -425,7 +467,7 @@ public class Matrix {
 
     private Matrix addToThis(Matrix... matrices) throws MatrixIllegalArgumentException {
 
-        validateMatricesDimensionAdd(this, matrices);
+        Matrix.validateMatricesDimensionAdd(this, matrices);
 
         for (int index = 0; index < this.length; index++) {
             double addValue = 0;
@@ -450,8 +492,8 @@ public class Matrix {
     }
 
     public static Matrix sum(Matrix... matrices) throws MatrixIllegalArgumentException {
-        validateMatricesNonEmpty(matrices);
-        validateMatricesNonNull(matrices[0]);
+        Matrix.validateMatricesNonEmpty(matrices);
+        Matrix.validateMatricesNonNull(matrices[0]);
         Matrix result = Matrix.ofZeros(matrices[0]);
         return result.add(matrices);
     }
@@ -470,8 +512,8 @@ public class Matrix {
 
     private static void validateDimensionsProd(Matrix... matrices) throws MatrixIllegalArgumentException {
 
-        validateMatricesNonEmpty(matrices);
-        validateMatricesNonNull(matrices);
+        Matrix.validateMatricesNonEmpty(matrices);
+        Matrix.validateMatricesNonNull(matrices);
 
         int rightNumRows = matrices[matrices.length - 1].numRows;
         for (int matrixIndex = matrices.length - 2; matrixIndex >= 0; matrixIndex--) {
@@ -486,7 +528,7 @@ public class Matrix {
 
     public static Matrix prod(Matrix... matrices) throws MatrixIllegalArgumentException {
 
-        validateDimensionsProd(matrices);
+        Matrix.validateDimensionsProd(matrices);
         Matrix result = matrices[matrices.length - 1];
 
         for (int matrixIndex = matrices.length - 2; matrixIndex >= 0; matrixIndex--) {
@@ -519,13 +561,13 @@ public class Matrix {
 
     private static int validateHorizontalConcatenate(Matrix... matrices) throws MatrixIllegalArgumentException {
 
-        validateMatricesNonEmpty(matrices);
-        validateMatricesNonNull(matrices[0]);
+        Matrix.validateMatricesNonEmpty(matrices);
+        Matrix.validateMatricesNonNull(matrices[0]);
         int numRows = matrices[0].numRows;
         int numCols = 0;
 
         for (Matrix matrix : matrices) {
-            validateMatricesNonNull(matrix);
+            Matrix.validateMatricesNonNull(matrix);
             if (numRows != matrix.numRows) {
                 throw new MatrixIllegalArgumentException("Dimension mismatch for 'numRows'");
             }
@@ -536,7 +578,7 @@ public class Matrix {
     }
 
     public static Matrix horizontalConcatenate(Matrix... matrices) throws MatrixIllegalArgumentException {
-        int numCols = validateHorizontalConcatenate(matrices);
+        int numCols = Matrix.validateHorizontalConcatenate(matrices);
         int numRows = matrices[0].numRows;
 
         Matrix result = Matrix.create(numRows, numCols);
@@ -556,13 +598,13 @@ public class Matrix {
 
     private static int validateVerticalConcatenate(Matrix... matrices) throws MatrixIllegalArgumentException {
 
-        validateMatricesNonEmpty(matrices);
-        validateMatricesNonNull(matrices[0]);
+        Matrix.validateMatricesNonEmpty(matrices);
+        Matrix.validateMatricesNonNull(matrices[0]);
         int numRows = 0;
         int numCols = matrices[0].numCols;
 
         for (Matrix matrix : matrices) {
-            validateMatricesNonNull(matrix);
+            Matrix.validateMatricesNonNull(matrix);
             if (numCols != matrix.numCols) {
                 throw new MatrixIllegalArgumentException("Dimension mismatch for 'numCols'");
             }
@@ -574,7 +616,7 @@ public class Matrix {
 
     public static Matrix verticalConcatenate(Matrix... matrices) throws MatrixIllegalArgumentException {
 
-        int numRows = validateVerticalConcatenate(matrices);
+        int numRows = Matrix.validateVerticalConcatenate(matrices);
         int numCols = matrices[0].numCols;
 
         Matrix result = Matrix.create(numRows, numCols);
@@ -655,7 +697,7 @@ public class Matrix {
     }
 
     private static void validateSquare(Matrix matrix) throws MatrixIllegalArgumentException {
-        validateMatricesNonNull(matrix);
+        Matrix.validateMatricesNonNull(matrix);
         if (!matrix.isSquare()) {
             throw new MatrixIllegalArgumentException("Matrix is not square");
         }
@@ -666,19 +708,19 @@ public class Matrix {
     }
 
     private static void validateSingleton(Matrix matrix) throws MatrixIllegalArgumentException {
-        validateMatricesNonNull(matrix);
+        Matrix.validateMatricesNonNull(matrix);
         if (!matrix.isSingleton()) {
             throw new MatrixIllegalArgumentException("Matrix is not a singleton");
         }
     }
 
     public double toDouble() {
-        validateSingleton(this);
+        Matrix.validateSingleton(this);
         return this.array[0];
     }
 
 //    public Matrix[] decomposeQRGramSchmidt(Matrix matrix) {
-//        validateSquare(matrix);
+//        Matrix.validateSquare(matrix);
 //
 //        Matrix Q = Matrix.create(matrix);
 //        Matrix R = Matrix.create(matrix);
