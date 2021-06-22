@@ -732,6 +732,39 @@ public class MatrixTest {
     }
 
     // -----------------------------------------------------------------------------------------------------------------
+    // getDiagonal
+    @SuppressWarnings("unused")
+    static Stream<Arguments> getDiagonalArguments = Stream.of(
+            Arguments.of(
+                    Matrix.create(new double[]{0}, 1, 1),
+                    Matrix.create(new double[]{0}, 1, 1)
+            )
+            , Arguments.of(
+                    Matrix.create(new double[]{1}, 1, 1),
+                    Matrix.create(new double[]{1}, 1, 1)
+            )
+            , Arguments.of(
+                    Matrix.create(new double[]{0, 1}, 1, 2),
+                    Matrix.create(new double[]{0}, 1, 1)
+            )
+            , Arguments.of(
+                    Matrix.create(new double[]{1, 0}, 1, 2),
+                    Matrix.create(new double[]{1}, 1, 1)
+            )
+            , Arguments.of(
+                    Matrix.create(new double[]{1, 2, 3, 4}, 2, 2),
+                    Matrix.create(new double[]{1, 4}, 2, 1)
+            )
+    );
+    @ParameterizedTest
+    @VariableSource("getDiagonalArguments")
+    public void testGetDiagonal(Matrix matrix, Matrix expected) {
+        Matrix actual = matrix.getDiagonal();
+        assertEquals(expected, actual);
+        assertNotSame(matrix, actual);
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
     // setDiagonal
     @SuppressWarnings("unused")
     static Stream<Arguments> setDiagonalArguments = Stream.of(
