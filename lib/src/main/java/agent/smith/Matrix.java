@@ -723,22 +723,26 @@ public class Matrix {
     public Matrix[] decomposeQRGramSchmidt() {
         Matrix.validateSquare(this);
 
+        // Initialise Q and R matrices
         Matrix Q = Matrix.create(this);
         Matrix R = Matrix.ofZeros(this);
 
+        // Loop to calculate each column of Q and corresponding values for R
         for (int colIndex = 0; colIndex < Q.numCols; colIndex++) {
 
+            // Get column of this matrix and initialise the column for Q as the same column
             Matrix thisColTranspose = this.getCol(colIndex).transpose();
             Matrix QCol = this.getCol(colIndex);
 
+            // Loop through all previous columns in Q and remove the projection of this column
             for (int prevColIndex = colIndex - 1; prevColIndex >= 0; prevColIndex--) {
                 Matrix prevCol = Q.getCol(prevColIndex);
                 double thisColDotQCol = thisColTranspose.multiply(prevCol).toDouble();
                 R.setToThis(prevColIndex, colIndex, thisColDotQCol);
                 QCol.addToThis(prevCol.multiplyToThis(-thisColDotQCol));
-
             }
 
+            // Normalise the column for Q
             double QColNormInv = 1 / Math.sqrt(QCol.transpose().multiply(QCol).toDouble());
             QCol.multiplyToThis(QColNormInv);
 
