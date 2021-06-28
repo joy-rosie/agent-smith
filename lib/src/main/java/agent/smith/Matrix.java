@@ -304,7 +304,7 @@ public class Matrix {
         return result.setDiagonalToThis(vector);
     }
 
-    public Matrix diagonalize() {
+    public Matrix diagonalizeToMatrix() {
         Matrix.validateVector(this);
         int numRowsAndCols = Math.max(this.numRows, this.numCols);
         Matrix result = Matrix.ofZeros(numRowsAndCols);
@@ -719,20 +719,34 @@ public class Matrix {
         return this.array[0];
     }
 
-//    public Matrix[] decomposeQRGramSchmidt(Matrix matrix) {
-//        Matrix.validateSquare(matrix);
-//
-//        Matrix Q = Matrix.create(matrix);
-//        Matrix R = Matrix.create(matrix);
-//
-//        for (int colIndex = 0; colIndex < Q.numCols; colIndex++) {
-//            double normColInv = 1 / Math.sqrt(matrix.getCol(colIndex).sum());
-//            for (int rowIndex = 0; rowIndex < Q.numRows; rowIndex++) {
-//                Q.setToThis(rowIndex, colIndex, matrix.get(rowIndex, colIndex) * normColInv);
-//            }
-//        }
-//
-//        return new Matrix[] { Q, R };
-//    }
+    public Matrix[] decomposeQRGramSchmidt() {
+        Matrix.validateSquare(this);
+
+        Matrix Q = Matrix.create(this);
+        Matrix R = Matrix.ofZeros(this);
+
+        for (int colIndex = 0; colIndex < Q.numCols; colIndex++) {
+
+            Matrix thisColTranspose = this.getCol(colIndex).transpose();
+            Matrix QCol = this.getCol(colIndex);
+
+            for (int prevColIndex = colIndex - 1; prevColIndex >= 0; prevColIndex--) {
+                Matrix prevCol = Q.getCol(prevColIndex);
+                double thisColDotQCol = thisColTranspose.multiply(prevCol).toDouble();
+                R.setToThis(prevColIndex, colIndex, thisColDotQCol);
+                QCol.addToThis(prevCol.multiplyToThis(-thisColDotQCol));
+
+            }
+
+            double QColNormInv = 1 / Math.sqrt(QCol.transpose().multiply(QCol).toDouble());
+            QCol.multiplyToThis(QColNormInv);
+
+            Q.setColToThis(QCol, colIndex);
+            R.setToThis(colIndex, colIndex, thisColTranspose.multiply(QCol).toDouble());
+
+        }
+
+        return new Matrix[] { Q, R };
+    }
 
 }

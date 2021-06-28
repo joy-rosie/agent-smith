@@ -2124,7 +2124,7 @@ public class MatrixTest {
     );
     @ParameterizedTest
     @VariableSource("toDoubleExceptionArguments")
-    public void testToDoubleExceptionException(Matrix matrix, String expected) {
+    public void testToDoubleException(Matrix matrix, String expected) {
         Exception thrown = assertThrows(MatrixIllegalArgumentException.class,
                 matrix::toDouble);
         assertEquals(expected, thrown.getMessage());
@@ -2141,6 +2141,48 @@ public class MatrixTest {
     public void testToDouble(Matrix matrix, double expected) {
         double actual = matrix.toDouble();
         assertEquals(expected, actual);
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+    // decomposeQRGramSchmidt
+    @SuppressWarnings("unused")
+    static Stream<Arguments> decomposeQRGramSchmidtExceptionArguments = Stream.of(
+            // matrix.numRows != matrix.numCols
+            Arguments.of(Matrix.create(new double[] {1, 2}, 1, 2), "Matrix is not square")
+            , Arguments.of(Matrix.create(new double[] {1, 2}, 2, 1), "Matrix is not square")
+    );
+    @ParameterizedTest
+    @VariableSource("decomposeQRGramSchmidtExceptionArguments")
+    public void testDecomposeQRGramSchmidtException(Matrix matrix, String expected) {
+        Exception thrown = assertThrows(MatrixIllegalArgumentException.class,
+                matrix::decomposeQRGramSchmidt);
+        assertEquals(expected, thrown.getMessage());
+    }
+
+    @SuppressWarnings("unused")
+    static Stream<Arguments> decomposeQRGramSchmidtArguments = Stream.of(
+//            Arguments.of(
+//                    Matrix.create(new double[] {1}, 1, 1),
+//                    Matrix.create(new double[] {1}, 1, 1),
+//                    Matrix.create(new double[] {1}, 1, 1)
+//            )
+//            , Arguments.of(
+//                    Matrix.create(new double[] {1, 0, 0, 1}, 2, 2),
+//                    Matrix.create(new double[] {1, 0, 0, 1}, 2, 2),
+//                    Matrix.create(new double[] {1, 0, 0, 1}, 2, 2)
+//            )
+            Arguments.of(
+                    Matrix.create(new double[] {1, 1, 0, 1, 0, 1, 0, 1, 1}, 3, 3),
+                    Matrix.create(new double[] {0.7071067811865475, 0.4082482904638632, -0.5773502691896257, 0.7071067811865475, -0.40824829046386296, 0.5773502691896258, 0.0, 0.8164965809277261, 0.5773502691896255}, 3, 3),
+                    Matrix.create(new double[] {1.414213562373095, 0.7071067811865475, 0.7071067811865475, 0.0, 1.2247448713915894, 0.4082482904638632, 0.0, 0.0, 1.1547005383792515}, 3, 3)
+            )
+    );
+    @ParameterizedTest
+    @VariableSource("decomposeQRGramSchmidtArguments")
+    public void testDecomposeQRGramSchmidt(Matrix matrix, Matrix expectedQ, Matrix expectedR) {
+        Matrix[] QR = matrix.decomposeQRGramSchmidt();
+        assertEquals(expectedQ, QR[0]);
+        assertEquals(expectedR, QR[1]);
     }
 
 }
