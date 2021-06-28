@@ -2161,28 +2161,42 @@ public class MatrixTest {
 
     @SuppressWarnings("unused")
     static Stream<Arguments> decomposeQRGramSchmidtArguments = Stream.of(
-//            Arguments.of(
-//                    Matrix.create(new double[] {1}, 1, 1),
-//                    Matrix.create(new double[] {1}, 1, 1),
-//                    Matrix.create(new double[] {1}, 1, 1)
-//            )
-//            , Arguments.of(
-//                    Matrix.create(new double[] {1, 0, 0, 1}, 2, 2),
-//                    Matrix.create(new double[] {1, 0, 0, 1}, 2, 2),
-//                    Matrix.create(new double[] {1, 0, 0, 1}, 2, 2)
-//            )
             Arguments.of(
+                    Matrix.create(new double[] {1}, 1, 1),
+                    Matrix.create(new double[] {1}, 1, 1),
+                    Matrix.create(new double[] {1}, 1, 1)
+            )
+            , Arguments.of(
+                    Matrix.create(new double[] {1, 0, 0, 1}, 2, 2),
+                    Matrix.create(new double[] {1, 0, 0, 1}, 2, 2),
+                    Matrix.create(new double[] {1, 0, 0, 1}, 2, 2)
+            )
+            , Arguments.of(
                     Matrix.create(new double[] {1, 1, 0, 1, 0, 1, 0, 1, 1}, 3, 3),
                     Matrix.create(new double[] {0.7071067811865475, 0.4082482904638632, -0.5773502691896257, 0.7071067811865475, -0.40824829046386296, 0.5773502691896258, 0.0, 0.8164965809277261, 0.5773502691896255}, 3, 3),
                     Matrix.create(new double[] {1.414213562373095, 0.7071067811865475, 0.7071067811865475, 0.0, 1.2247448713915894, 0.4082482904638632, 0.0, 0.0, 1.1547005383792515}, 3, 3)
+            )
+            , Arguments.of(
+                    Matrix.create(new double[] {3, 2, 1, 2}, 2, 2),
+                    Matrix.create(new double[] {0.9486832980505138, -0.31622776601683783, 0.31622776601683794, 0.9486832980505137}, 2, 2),
+                    Matrix.create(new double[] {3.162277660168379, 2.5298221281347035, 0.0, 1.2649110640673515}, 2, 2)
             )
     );
     @ParameterizedTest
     @VariableSource("decomposeQRGramSchmidtArguments")
     public void testDecomposeQRGramSchmidt(Matrix matrix, Matrix expectedQ, Matrix expectedR) {
         Matrix[] QR = matrix.decomposeQRGramSchmidt();
-        assertEquals(expectedQ, QR[0]);
-        assertEquals(expectedR, QR[1]);
+        Matrix Q = QR[0];
+        Matrix R = QR[1];
+        assertEquals(expectedQ, Q);
+        assertEquals(expectedR, R);
+        assertTrue(Matrix.equalsWithinTolerance(matrix, Q.multiply(R)));
+        assertTrue(Matrix.equalsWithinTolerance(Q.transpose().multiply(Q), Matrix.instanceOfEye(Q)));
+        for (int rowIndex = 0; rowIndex < R.getNumRows(); rowIndex++) {
+            for (int colIndex = 0; colIndex < rowIndex; colIndex++) {
+                assertEquals(0, R.get(rowIndex, colIndex));
+            }
+        }
     }
 
 }

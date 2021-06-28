@@ -15,6 +15,7 @@ public class Matrix {
     private final int numRows;
     private final int numCols;
     private final int length;
+    private static final double MAX_TOLERANCE = 1e-15;
 
     private void validateNumRows() throws MatrixIllegalArgumentException {
         if (this.numRows <= 0) {
@@ -747,6 +748,38 @@ public class Matrix {
         }
 
         return new Matrix[] { Q, R };
+    }
+
+    public double maxDifference(Matrix other) {
+        double max_value = Double.MIN_VALUE;
+        for (int index = 0; index < this.length; index++) {
+            max_value = Math.max(max_value, Math.abs(this.array[index] - other.array[index]));
+        }
+        return max_value;
+    }
+
+    public boolean equalsWithinTolerance(Matrix other, double tolerance) {
+        Matrix.validateMatricesNonNull(other);
+        if (this.numRows != other.numRows || this.numCols != other.numCols) {
+            return false;
+        } else {
+            double maxDifference = this.maxDifference(other);
+            return maxDifference < tolerance;
+        }
+    }
+
+    public boolean equalsWithinTolerance(Matrix other) {
+        return this.equalsWithinTolerance(other, Matrix.MAX_TOLERANCE);
+    }
+
+    public static boolean equalsWithinTolerance(Matrix matrix, Matrix other, double tolerance) {
+        Matrix.validateMatricesNonNull(matrix);
+        return matrix.equalsWithinTolerance(other, tolerance);
+    }
+
+    public static boolean equalsWithinTolerance(Matrix matrix, Matrix other) {
+        Matrix.validateMatricesNonNull(matrix);
+        return matrix.equalsWithinTolerance(other);
     }
 
 }
