@@ -2181,6 +2181,11 @@ public class MatrixTest {
                     Matrix.create(new double[] {0.9486832980505138, -0.31622776601683783, 0.31622776601683794, 0.9486832980505137}, 2, 2),
                     Matrix.create(new double[] {3.162277660168379, 2.5298221281347035, 0.0, 1.2649110640673515}, 2, 2)
             )
+//            , Arguments.of(
+//                    Matrix.create(new double[] {1, 1, 0, 0}, 2, 2),
+//                    Matrix.create(new double[] {0.9486832980505138, -0.31622776601683783, 0.31622776601683794, 0.9486832980505137}, 2, 2),
+//                    Matrix.create(new double[] {3.162277660168379, 2.5298221281347035, 0.0, 1.2649110640673515}, 2, 2)
+//            )
     );
     @ParameterizedTest
     @VariableSource("decomposeQRGramSchmidtArguments")
@@ -2197,6 +2202,104 @@ public class MatrixTest {
                 assertEquals(0, R.get(rowIndex, colIndex));
             }
         }
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+    // getBlock
+    @SuppressWarnings("unused")
+    static Stream<Arguments> getBlockExceptionArguments = Stream.of(
+            // rowStartIndex < 0
+            Arguments.of(Matrix.create(new double[] {1, 2, 3, 4}, 2, 2), -1, 0, 0, 0,
+                    "Invalid indexes")
+            // colStartIndex < 0
+            , Arguments.of(Matrix.create(new double[] {1, 2, 3, 4}, 2, 2), 0, 0, -1, 0,
+                    "Invalid indexes")
+            // rowEndIndex > matrix.numRows
+            , Arguments.of(Matrix.create(new double[] {1, 2, 3, 4}, 2, 2), 2, 0, 0, 0,
+                    "Invalid indexes")
+            // colEndIndex > matrix.numRows
+            , Arguments.of(Matrix.create(new double[] {1, 2, 3, 4}, 2, 2), 0, 2, 0, 0,
+                    "Invalid indexes")
+            // rowEndIndex < rowStartIndex
+            , Arguments.of(Matrix.create(new double[] {1, 2, 3, 4}, 2, 2), 1, 0, 0, 0,
+                    "Invalid indexes")
+            // colEndIndex < colStartIndex
+            , Arguments.of(Matrix.create(new double[] {1, 2, 3, 4}, 2, 2), 0, 0, 1, 0,
+                    "Invalid indexes")
+    );
+    @ParameterizedTest
+    @VariableSource("getBlockExceptionArguments")
+    public void testGetBlockException(Matrix matrix, int rowStartIndexInc, int rowEndIndexExc, int colStartIndexInc,
+                                      int colEndIndexExc, String expected) {
+        Exception thrown = assertThrows(MatrixIllegalArgumentException.class,
+                () -> matrix.getBlock(rowStartIndexInc, rowEndIndexExc, colStartIndexInc, colEndIndexExc));
+        assertEquals(expected, thrown.getMessage());
+    }
+
+    @SuppressWarnings("unused")
+    static Stream<Arguments> getBlockArguments = Stream.of(
+            Arguments.of(
+                    Matrix.create(new double[] {1}, 1, 1),
+                    0, 0, 0, 0,
+                    Matrix.create(new double[] {1}, 1, 1)
+            )
+            , Arguments.of(
+                    Matrix.create(new double[] {1, 2, 3, 4}, 2, 2),
+                    0, 1, 0, 1,
+                    Matrix.create(new double[] {1, 2, 3, 4}, 2, 2)
+            )
+            , Arguments.of(
+                    Matrix.create(new double[] {1, 2, 3, 4}, 2, 2),
+                    0, 0, 0, 0,
+                    Matrix.create(new double[] {1}, 1, 1)
+            )
+            , Arguments.of(
+                    Matrix.create(new double[] {1, 2, 3, 4}, 2, 2),
+                    1, 1, 1, 1,
+                    Matrix.create(new double[] {4}, 1, 1)
+            )
+            , Arguments.of(
+                    Matrix.create(new double[] {1, 2, 3, 4}, 2, 2),
+                    1, 1, 0, 0,
+                    Matrix.create(new double[] {3}, 1, 1)
+            )
+            , Arguments.of(
+                    Matrix.create(new double[] {1, 2, 3, 4}, 2, 2),
+                    0, 0, 1, 1,
+                    Matrix.create(new double[] {2}, 1, 1)
+            )
+            , Arguments.of(
+                    Matrix.create(new double[] {1, 2, 3, 4}, 2, 2),
+                    0, 0, 0, 1,
+                    Matrix.create(new double[] {1, 2}, 1, 2)
+            )
+            , Arguments.of(
+                    Matrix.create(new double[] {1, 2, 3, 4}, 2, 2),
+                    1, 1, 0, 1,
+                    Matrix.create(new double[] {3, 4}, 1, 2)
+            )
+            , Arguments.of(
+                    Matrix.create(new double[] {1, 2, 3, 4}, 2, 2),
+                    0, 1, 0, 0,
+                    Matrix.create(new double[] {1, 3}, 2, 1)
+            )
+            , Arguments.of(
+                    Matrix.create(new double[] {1, 2, 3, 4}, 2, 2),
+                    0, 1, 1, 1,
+                    Matrix.create(new double[] {2, 4}, 2, 1)
+            )
+            , Arguments.of(
+                    Matrix.create(new double[] {1, 2, 3, 4, 5, 6}, 2, 3),
+                    0, 1, 0, 1,
+                    Matrix.create(new double[] {1, 2, 4, 5}, 2, 2)
+            )
+    );
+    @ParameterizedTest
+    @VariableSource("getBlockArguments")
+    public void testGetBlockArguments(Matrix matrix, int rowStartIndexInc, int rowEndIndexExc, int colStartIndexInc,
+                                      int colEndIndexExc, Matrix expected) {
+        Matrix actual = matrix.getBlock(rowStartIndexInc, rowEndIndexExc, colStartIndexInc, colEndIndexExc);
+        assertEquals(expected, actual);
     }
 
 }

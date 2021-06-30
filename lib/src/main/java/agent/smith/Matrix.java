@@ -762,7 +762,7 @@ public class Matrix {
         return max_value;
     }
 
-    public boolean equalsWithinTolerance(Matrix other, double tolerance) {
+    public boolean equalsMaxWithinTolerance(Matrix other, double tolerance) {
         Matrix.validateMatricesNonNull(other);
         if (this.numRows != other.numRows || this.numCols != other.numCols) {
             return false;
@@ -773,17 +773,39 @@ public class Matrix {
     }
 
     public boolean equalsWithinTolerance(Matrix other) {
-        return this.equalsWithinTolerance(other, Matrix.MAX_TOLERANCE);
+        return this.equalsMaxWithinTolerance(other, Matrix.MAX_TOLERANCE);
     }
 
     public static boolean equalsWithinTolerance(Matrix matrix, Matrix other, double tolerance) {
         Matrix.validateMatricesNonNull(matrix);
-        return matrix.equalsWithinTolerance(other, tolerance);
+        return matrix.equalsMaxWithinTolerance(other, tolerance);
     }
 
     public static boolean equalsWithinTolerance(Matrix matrix, Matrix other) {
         Matrix.validateMatricesNonNull(matrix);
         return matrix.equalsWithinTolerance(other);
+    }
+
+    public Matrix getBlock(int rowStartIndex, int rowEndIndex, int colStartIndex, int colEndIndex)
+            throws MatrixIllegalArgumentException {
+
+        if (
+                rowStartIndex < 0 || colStartIndex < 0 ||
+                rowEndIndex >= this.numRows || colEndIndex >= this.numCols ||
+                rowEndIndex < rowStartIndex || colEndIndex < colStartIndex
+        ) {
+            throw new MatrixIllegalArgumentException("Invalid indexes");
+        }
+
+        Matrix matrix = Matrix.create(rowEndIndex - rowStartIndex + 1,
+                colEndIndex - colStartIndex + 1);
+
+        for (int rowIndex = 0; rowIndex < matrix.numRows; rowIndex++) {
+            System.arraycopy(this.array, this.getIndex(rowStartIndex + rowIndex, colStartIndex), matrix.array,
+                    matrix.getIndex(rowIndex, 0), matrix.numCols);
+        }
+
+        return matrix;
     }
 
 }
